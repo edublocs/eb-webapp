@@ -31,7 +31,7 @@
     "babel-register": "^6.26.0",
     "copy-webpack-plugin": "^4.5.1",
     "css-loader": "^0.28.11",
-    "eb-contracts": "edublocs/eb-contracts",
+    "eb-contracts": "github:edublocs/eb-contracts",
     "eslint": "^4.19.1",
     "eslint-config-standard": "^11.0.0",
     "eslint-plugin-babel": "^5.1.0",
@@ -46,7 +46,7 @@
     "truffle": "^4.1.12",
     "truffle-contract": "^3.0.6",
     "web3": "^1.0.0-beta.34",
-    "webpack": "^4.12.0",
+    "webpack": "^4.13.0",
     "webpack-cli": "^3.0.8",
     "webpack-dev-server": "^3.1.4"
   }

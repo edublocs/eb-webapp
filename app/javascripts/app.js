@@ -39,7 +39,8 @@ window.App = {
       accounts = accs;
       account = accounts[0];
 
-      self.refreshBalance();
+      self.refreshEvaluationCount();
+      self.refreshStudents();
     });
   },
 
@@ -48,26 +49,58 @@ window.App = {
     status.innerHTML = message;
   },
 
-  refreshBalance: function() {
+  refreshEvaluationCount: function() {
     var self = this;
 
     var gb;
     GradeBook.deployed().then(function(instance) {
       gb = instance;
-      return gb.getBalance.call(account, {from: account});
+      return gb.getEvaluationCount.call();
     }).then(function(value) {
-      var balance_element = document.getElementById("balance");
-      balance_element.innerHTML = value.valueOf();
+      var evaluationCount_element = document.getElementById("EvaluationCount");
+      evaluationCount_element.innerHTML = value.valueOf();
     }).catch(function(e) {
       console.log(e);
-      self.setStatus("Error getting balance; see log.");
+      self.setStatus("Error getting evaluation count; see log.");
+    });
+  },
+
+  refreshStudents: function() {
+    var self = this;
+
+    var gb;
+    GradeBook.deployed().then(function(instance) {
+      gb = instance;
+      return gb.getStudentCount.call();
+    }).then(function(value) {
+      var student_element = document.getElementById("student");
+      console.log(value.toNumber());
+      let current;
+      let promiseChain = Promise.resolve();
+      for (let i=1; i <= value.toNumber(); i++) {
+        const makeNextPromise = (current) => () => {
+        return gb.getStudentIDText.call(i)
+          .then((text) => {
+            console.log(text);
+            var option = document.createElement("option")
+            option.text = web3.utils.toUtf8(text);
+            option.value = i;
+            student_element.add(option);
+          });
+        }
+        promiseChain = promiseChain.then(makeNextPromise(current));
+      };
+      student_element.innerHTML = value.valueOf();
+    }).catch(function(e) {
+      console.log(e);
+      self.setStatus("Error getting evaluation count; see log.");
     });
   },
 
   makeStudentID: function() {
     var self = this;
 
-    var studentIDText = document.getElementById("StudentIDText").value;
+    var studentIDText = document.getElementById("studentIDText").value;
 
     this.setStatus("Initiating transaction... (please wait)");
 
@@ -77,7 +110,7 @@ window.App = {
       return gb.makeStudentID(studentIDText, {from: account});
     }).then(function() {
       self.setStatus("Transaction complete!");
-      self.refreshBalance();
+      self.refreshStudents();
     }).catch(function(e) {
       console.log(e);
       self.setStatus("Error creating student ID; see log.");
