@@ -24,8 +24,24 @@ window.App = {
     // Bootstrap the GradeBook abstraction for Use.
     GradeBook.setProvider(web3.currentProvider);
 
-    self.refreshEvaluationCount();
-    self.refreshStudents();
+    // Get the initial account balance so it can be displayed.
+    web3.eth.getAccounts(function(err, accs) {
+      if (err != null) {
+        alert("There was an error fetching your accounts.");
+        return;
+      }
+
+      if (accs.length == 0) {
+        alert("Couldn't get any accounts! Make sure your Ethereum client is configured correctly.");
+        return;
+      }
+
+      accounts = accs;
+      account = accounts[0];
+
+      self.refreshEvaluationCount();
+      self.refreshStudents();
+    });
   },
 
   setStatus: function(message) {
@@ -65,7 +81,6 @@ window.App = {
         const makeNextPromise = (current) => () => {
         return gb.getStudentIDText.call(i)
           .then((text) => {
-            console.log(text);
             var option = document.createElement("option")
             option.text = web3.utils.toUtf8(text);
             option.value = i;
@@ -98,6 +113,32 @@ window.App = {
     }).catch(function(e) {
       console.log(e);
       self.setStatus("Error creating student ID; see log.");
+    });
+  },
+
+  recordEvaluation: function() {
+    var self = this;
+
+    var studentID = document.getElementById("student").value;
+    var activity = document.getElementById("activity").value;
+    var complexity = document.getElementById("complexity").value;
+    var effort = document.getElementById("effort").value;
+    var weight = document.getElementById("weight").value;
+    var points = document.getElementById("points").value;
+    var weightedPoints = document.getElementById("weightedPoints").value;
+
+    this.setStatus("Initiating transaction... (please wait)");
+
+    var gb;
+    GradeBook.deployed().then(function(instance) {
+      gb = instance;
+      return gb.recordEvaluation(studentID, activity, complexity, effort, weight, points, weightedPoints, {from: account});
+    }).then(function() {
+      self.setStatus("Transaction complete!");
+      self.refreshEvaluationCount();
+    }).catch(function(e) {
+      console.log(e);
+      self.setStatus("Error recording evaluation; see log.");
     });
   }
 };
