@@ -51,10 +51,10 @@ window.App = {
   refreshBalance: function() {
     var self = this;
 
-    var meta;
+    var gb;
     GradeBook.deployed().then(function(instance) {
-      meta = instance;
-      return meta.getBalance.call(account, {from: account});
+      gb = instance;
+      return gb.getBalance.call(account, {from: account});
     }).then(function(value) {
       var balance_element = document.getElementById("balance");
       balance_element.innerHTML = value.valueOf();
@@ -64,24 +64,23 @@ window.App = {
     });
   },
 
-  sendCoin: function() {
+  makeStudentID: function() {
     var self = this;
 
-    var amount = parseInt(document.getElementById("amount").value);
-    var receiver = document.getElementById("receiver").value;
+    var studentIDText = document.getElementById("StudentIDText").value;
 
     this.setStatus("Initiating transaction... (please wait)");
 
-    var meta;
+    var gb;
     GradeBook.deployed().then(function(instance) {
-      meta = instance;
-      return meta.sendCoin(receiver, amount, {from: account});
+      gb = instance;
+      return gb.makeStudentID(studentIDText, {from: account});
     }).then(function() {
       self.setStatus("Transaction complete!");
       self.refreshBalance();
     }).catch(function(e) {
       console.log(e);
-      self.setStatus("Error sending coin; see log.");
+      self.setStatus("Error creating student ID; see log.");
     });
   }
 };
