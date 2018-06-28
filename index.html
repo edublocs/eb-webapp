@@ -17,7 +17,7 @@
   <br/><br/>
   <h1>Record an Evaluation</h1>
   <form id="recordEvaluation">
-    <label for="student">Student:</label><select id="student"></select><br/>
+    <label for="student">Student ID:</label><select id="student"></select><br/>
     <label for="activity">Activity:</label><input type="text" id="activity" /><br/>
 
     <label for="complexity">Complexity:</label><input type="text" id="complexity" /><br/>
@@ -25,7 +25,7 @@
     <label for="weight">Weight:</label><input type="text" id="weight" /><br/>
     <label for="points">Points:</label><input type="text" id="points" /><br/>
     <label for="weightedPoints">Weighted Points:</label><input type="text" id="weightedPoints" /><br/>
-    <label for="submitEvaluation">&nbsp;</label><input type="submit" id="submitEvaluation"/>
+    <label for="recordEvaluation">&nbsp;</label><button onClick="App.recordEvaluation()" id="recordEvaluation">Record Evaluation</button>
   </form>
   <span id="status"></span>
 </body>
