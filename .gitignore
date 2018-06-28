@@ -1,6 +1,10 @@
 # Vim
 **/*.swp
 
+# Compiled files
+build/app.js
+build/index.html
+
 .DS_Store
 node_modules/
 dist/
