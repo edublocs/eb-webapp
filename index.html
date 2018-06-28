@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>edublocs Grade Book</title>
+  <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+  <script src="./app.js"></script>
+</head>
+<body>
+  <h1>edublocs</h1>
+  <h2>Grade Book</h2>
+  <h3><span class="black">Evaluations recorded: <span id="EvaluationCount"></span></span></h3>
+
+  <br/>
+  <h1>Create a Student ID</h1>
+  <br/><label for="StudentIDText">for identifier:</label><input type="text" id="studentIDText" placeholder="e.g., niub20025563"></input>
+  <button id="send" onclick="App.makeStudentID()">Create Student ID</button>
+  <br/><br/>
+  <h1>Record an Evaluation</h1>
+  <form id="recordEvaluation">
+    <label for="student">Student:</label><select id="student" /><br/>
+    <label for="activity">Activity:</label><input type="text" id="activity" /><br/>
+
+    <label for="complexity">Complexity:</label><input type="text" id="complexity" /><br/>
+    <label for="effort">Effort:</label><input type="text" id="effort" /><br/>
+    <label for="weight">Weight:</label><input type="text" id="weight" /><br/>
+    <label for="points">Points:</label><input type="text" id="points" /><br/>
+    <label for="weightedPoints">Weighted Points:</label><input type="text" id="weightedPoints" /><br/>
+    <label for="submitEvaluation">&nbsp;</label><input type="submit" id="submitEvaluation"/>
+  </form>
+  <span id="status"></span>
+  <br/>
+  <span class="hint"><strong>Hint:</strong> open the browser developer console to view any errors and warnings.</span>
+</body>
+</html>
