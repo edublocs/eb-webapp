@@ -17,9 +17,7 @@
   <br/><br/>
   <h1>Record an Evaluation</h1>
   <form id="recordEvaluation">
-    <label for="student">Student:</label><select id="student" /><br/>
-    <!-- fascinating: the select tab wipes out the label tag that follows it. -->
-    <label for="bogus"></label><input type="text" id="bogus" style="visibility:hidden;"/><br/>
+    <label for="student">Student:</label><select id="student"></select><br/>
     <label for="activity">Activity:</label><input type="text" id="activity" /><br/>
 
     <label for="complexity">Complexity:</label><input type="text" id="complexity" /><br/>
@@ -30,7 +28,5 @@
     <label for="submitEvaluation">&nbsp;</label><input type="submit" id="submitEvaluation"/>
   </form>
   <span id="status"></span>
-  <br/>
-  <span class="hint"><strong>Hint:</strong> open the browser developer console to view any errors and warnings.</span>
 </body>
 </html>
