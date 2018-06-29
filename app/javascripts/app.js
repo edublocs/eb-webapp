@@ -73,20 +73,21 @@ window.App = {
       var evaluationTable = document.getElementById('evaluations')
       let current
       let promiseChain = Promise.resolve()
-      for (let i = 1; i <= evaluationCount; i++) {
+      for (let i = 0; i < evaluationCount; i++) {
         const makeNextPromise = (current) => () => {
-          return gb.getEvaluationByRecorderID.call(1,i)
+          return gb.getEvaluation(i)
             .then((evaluation) => {
               var row = evaluationTable.insertRow(-1)
-              var studID = evaluation[0].toNumber()
-              row.insertCell(0).innerHTML=studID;
-              // TODO decode student ID
-              row.insertCell(1).innerHTML=evaluation[1].toNumber();
-              row.insertCell(2).innerHTML=evaluation[2].toNumber();
-              row.insertCell(3).innerHTML=evaluation[3].toNumber();
-              row.insertCell(4).innerHTML=evaluation[4].toNumber();
-              row.insertCell(5).innerHTML=evaluation[5].toNumber();
-              row.insertCell(6).innerHTML=evaluation[6].toNumber();
+              row.insertCell(0).innerHTML=evaluation[0].toNumber()
+              row.insertCell(1).innerHTML=evaluation[1]
+              row.insertCell(2).innerHTML=evaluation[2].toNumber()
+              row.insertCell(3).innerHTML=web3.utils.toUtf8(evaluation[3])
+              row.insertCell(4).innerHTML=evaluation[4].toNumber()
+              row.insertCell(5).innerHTML=evaluation[5].toNumber()
+              row.insertCell(6).innerHTML=evaluation[6].toNumber()
+              row.insertCell(7).innerHTML=evaluation[7].toNumber()
+              row.insertCell(8).innerHTML=evaluation[8].toNumber()
+              row.insertCell(9).innerHTML=evaluation[9].toNumber()
             })
         }
         promiseChain = promiseChain.then(makeNextPromise(current))
