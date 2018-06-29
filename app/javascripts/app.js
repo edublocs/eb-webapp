@@ -31,8 +31,11 @@ window.App = {
         return;
       }
 
-      if (accs.length == 0) {
-        alert("Couldn't get any accounts! Make sure your Ethereum client is configured correctly.");
+      if (accs.length == 0 && !readOnly) {
+        if(web3.currentProvider.isMetaMask === true)
+          alert("Please log in to MetaMask and refresh this page in order to record new data.");
+        else
+          alert("Couldn't get any accounts! Make sure your Ethereum client is configured correctly.");
         return;
       }
 
@@ -41,6 +44,9 @@ window.App = {
 
       self.refreshEvaluationCount();
       self.refreshStudents();
+
+      if(readOnly)
+        document.getElementById("readonlymessage").style.display = "block";
     });
   },
 
@@ -148,9 +154,11 @@ window.addEventListener('load', function() {
   if (typeof web3 !== 'undefined') {
     // Use Mist/MetaMask's provider
     window.web3 = new Web3(web3.currentProvider);
+    window.readOnly = false;
   } else {
     // fallback to infura
     window.web3 = new Web3(new Web3.providers.HttpProvider("https://ropsten.infura.io/nxqvLpMcFgty1XUFr67x"));
+    window.readOnly = true;
   }
 
   App.start();
