@@ -19,11 +19,11 @@ var GradeBook = contract(gradeBookArtifacts)
 // For application bootstrapping, check out window.addEventListener below.
 var accounts
 var account
+var readOnly = false
 
 window.App = {
   start: function () {
     var self = this
-    var readOnly = false
 
     // Bootstrap the GradeBook abstraction for Use.
     GradeBook.setProvider(web3.currentProvider)
@@ -47,8 +47,8 @@ window.App = {
       accounts = accs
       account = accounts[0]
 
-      self.refreshEvaluationCount()
       self.refreshStudents()
+      self.refreshEvaluations()
 
       if (readOnly) { document.getElementById('readonlymessage').style.display = 'block' }
     })
@@ -59,7 +59,7 @@ window.App = {
     status.innerHTML = message
   },
 
-  refreshEvaluationCount: function () {
+  refreshEvaluations: function () {
     var self = this
 
     var gb
@@ -67,11 +67,33 @@ window.App = {
       gb = instance
       return gb.getEvaluationCount.call()
     }).then(function (value) {
+      var evaluationCount = value.valueOf()
       var evaluationCountElement = document.getElementById('EvaluationCount')
-      evaluationCountElement.innerHTML = value.valueOf()
+      evaluationCountElement.innerHTML = evaluationCount
+      var evaluationTable = document.getElementById('evaluations')
+      let current
+      let promiseChain = Promise.resolve()
+      for (let i = 1; i <= evaluationCount; i++) {
+        const makeNextPromise = (current) => () => {
+          return gb.getEvaluationByRecorderID.call(1,i)
+            .then((evaluation) => {
+              var row = evaluationTable.insertRow(-1)
+              var studID = evaluation[0].toNumber()
+              row.insertCell(0).innerHTML=studID;
+              // TODO decode student ID
+              row.insertCell(1).innerHTML=evaluation[1].toNumber();
+              row.insertCell(2).innerHTML=evaluation[2].toNumber();
+              row.insertCell(3).innerHTML=evaluation[3].toNumber();
+              row.insertCell(4).innerHTML=evaluation[4].toNumber();
+              row.insertCell(5).innerHTML=evaluation[5].toNumber();
+              row.insertCell(6).innerHTML=evaluation[6].toNumber();
+            })
+        }
+        promiseChain = promiseChain.then(makeNextPromise(current))
+      }
     }).catch(function (e) {
       console.log(e)
-      self.setStatus('Error getting evaluation count; see log.')
+      self.setStatus('Error getting evaluations; see log.')
     })
   },
 
@@ -84,7 +106,6 @@ window.App = {
       return gb.getStudentCount.call()
     }).then(function (value) {
       var studentElement = document.getElementById('student')
-      console.log(value.toNumber())
       let current
       let promiseChain = Promise.resolve()
       for (let i = 1; i <= value.toNumber(); i++) {
@@ -146,7 +167,7 @@ window.App = {
         studentID, activity, complexity, effort, weight, points, weightedPoints, { from: account })
     }).then(function () {
       self.setStatus('Transaction complete!')
-      self.refreshEvaluationCount()
+      self.refreshEvaluations()
     }).catch(function (e) {
       console.log(e)
       self.setStatus('Error recording evaluation; see log.')
@@ -159,11 +180,11 @@ window.addEventListener('load', function () {
   if (typeof web3 !== 'undefined') {
     // Use Mist/MetaMask's provider
     window.web3 = new Web3(web3.currentProvider)
-    window.readOnly = false
+    readOnly = false
   } else {
     // fallback to infura
     window.web3 = new Web3(new Web3.providers.HttpProvider('https://ropsten.infura.io/nxqvLpMcFgty1XUFr67x'))
-    window.readOnly = true
+    readOnly = true
   }
 
   App.start()

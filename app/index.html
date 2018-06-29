@@ -8,8 +8,28 @@
 <body>
   <h1>edublocs</h1>
   <h2>Grade Book</h2>
-  <h3><span class="black">Evaluations recorded: <span id="EvaluationCount"></span></span></h3>
 
+  <br/>
+  <br/>
+
+  <h2><span class="black">Evaluations recorded: <span id="EvaluationCount"></span></span></h3>
+  <table id="evaluations">
+    <thead>
+      <tr>
+        <th>Student ID</th>
+        <th>Activity</th>
+        <th>Complexity</th>
+        <th>Effort</th>
+        <th>Weight</th>
+        <th>Points</th>
+        <th>Weighted Points</th>
+      </tr>
+    </thead>
+    <tbody>
+    </tbody>
+  </table>
+
+  <br/>
   <br/>
 
   <div id="writing">
@@ -28,7 +48,10 @@
       <h1>Create a Student ID</h1>
       <br/><label for="StudentIDText">for identifier:</label><input type="text" id="studentIDText" placeholder="e.g., niub20025563"></input>
       <button id="send" onclick="App.makeStudentID()">Create Student ID</button>
-      <br/><br/>
+
+      <br/>
+      <br/>
+
       <h1>Record an Evaluation</h1>
       <form id="recordEvaluation">
         <label for="student">Student ID:</label><select id="student"></select><br/>
