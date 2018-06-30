@@ -14,9 +14,6 @@ import gradeBookArtifacts from '../../build/contracts/GradeBook.json'
 // GradeBook is our usable abstraction, which we'll use through the code below.
 var GradeBook = contract(gradeBookArtifacts)
 
-// The following code is simple to show off interacting with your contracts.
-// As your needs grow you will likely need to change its form and structure.
-// For application bootstrapping, check out window.addEventListener below.
 var accounts
 var account
 var readOnly = false
@@ -28,24 +25,26 @@ window.App = {
     // Bootstrap the GradeBook abstraction for Use.
     GradeBook.setProvider(web3.currentProvider)
 
+    // workaround https://github.com/trufflesuite/truffle-contract/issues/57
+    if (typeof GradeBook.currentProvider.sendAsync !== "function") {
+      GradeBook.currentProvider.sendAsync = function() {
+        return GradeBook.currentProvider.send.apply( GradeBook.currentProvider, arguments);
+      }
+    }
+
     // Get the initial account balance so it can be displayed.
     web3.eth.getAccounts(function (err, accs) {
-      if (err != null) {
-        alert('There was an error fetching your accounts.')
-        return
-      }
-
       if (accs.length === 0 && !readOnly) {
         if (web3.currentProvider.isMetaMask === true) {
           alert('Please log in to MetaMask and refresh this page in order to record new data.')
         } else {
           alert("Couldn't get any accounts! Make sure your Ethereum client is configured correctly.")
         }
-        return
+        readOnly = true
+      } else {
+        accounts = accs
+        account = accounts[0]
       }
-
-      accounts = accs
-      account = accounts[0]
 
       self.refreshStudents()
       self.refreshEvaluations()
@@ -62,6 +61,7 @@ window.App = {
   refreshEvaluations: function () {
     var self = this
 
+    console.log(GradeBook.deployed())
     var gb
     GradeBook.deployed().then(function (instance) {
       gb = instance
