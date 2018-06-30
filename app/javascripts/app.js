@@ -61,7 +61,6 @@ window.App = {
   refreshEvaluations: function () {
     var self = this
 
-    console.log(GradeBook.deployed())
     var gb
     GradeBook.deployed().then(function (instance) {
       gb = instance
