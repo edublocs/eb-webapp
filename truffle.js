@@ -19,7 +19,7 @@ module.exports = {
       host: '127.0.0.1',
       port: 8545,
       network_id: '*', // Match any network id
-      from: "0x00c8bc664147389328cb56f0b1edc391c591191f",
+      from: '0x00c8bc664147389328cb56f0b1edc391c591191f',
       gas: 4700000
     }
   }

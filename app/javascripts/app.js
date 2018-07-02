@@ -17,7 +17,7 @@ var GradeBook = contract(gradeBookArtifacts)
 var accounts
 var account
 var readOnly = false
-var students = [];
+var students = []
 
 window.App = {
   start: function () {
@@ -27,9 +27,9 @@ window.App = {
     GradeBook.setProvider(web3.currentProvider)
 
     // workaround https://github.com/trufflesuite/truffle-contract/issues/57
-    if (typeof GradeBook.currentProvider.sendAsync !== "function") {
-      GradeBook.currentProvider.sendAsync = function() {
-        return GradeBook.currentProvider.send.apply( GradeBook.currentProvider, arguments);
+    if (typeof GradeBook.currentProvider.sendAsync !== 'function') {
+      GradeBook.currentProvider.sendAsync = function () {
+        return GradeBook.currentProvider.send.apply(GradeBook.currentProvider, arguments)
       }
     }
 
@@ -78,16 +78,16 @@ window.App = {
           return gb.getEvaluation(i)
             .then((evaluation) => {
               var row = evaluationTable.insertRow(-1)
-              row.insertCell(0).innerHTML=evaluation[0].toNumber()
-              row.insertCell(1).innerHTML=evaluation[1]
-              row.insertCell(2).innerHTML=evaluation[2].toNumber()
-              row.insertCell(3).innerHTML=web3.utils.toUtf8(evaluation[3])
-              row.insertCell(4).innerHTML=evaluation[4].toNumber()
-              row.insertCell(5).innerHTML=evaluation[5].toNumber()
-              row.insertCell(6).innerHTML=evaluation[6].toNumber()
-              row.insertCell(7).innerHTML=evaluation[7].toNumber()
-              row.insertCell(8).innerHTML=evaluation[8].toNumber()
-              row.insertCell(9).innerHTML=evaluation[9].toNumber()
+              row.insertCell(0).innerHTML = evaluation[0].toNumber()
+              row.insertCell(1).innerHTML = evaluation[1]
+              row.insertCell(2).innerHTML = evaluation[2].toNumber()
+              row.insertCell(3).innerHTML = web3.utils.toUtf8(evaluation[3])
+              row.insertCell(4).innerHTML = evaluation[4].toNumber()
+              row.insertCell(5).innerHTML = evaluation[5].toNumber()
+              row.insertCell(6).innerHTML = evaluation[6].toNumber()
+              row.insertCell(7).innerHTML = evaluation[7].toNumber()
+              row.insertCell(8).innerHTML = evaluation[8].toNumber()
+              row.insertCell(9).innerHTML = evaluation[9].toNumber()
             })
         }
         promiseChain = promiseChain.then(makeNextPromise(current))
@@ -98,7 +98,7 @@ window.App = {
     })
   },
 
-  refreshStudents: function () {
+  refreshStudents: function (selectedStudent) {
     var self = this
 
     var gb
@@ -117,6 +117,7 @@ window.App = {
               const textUTF8 = web3.utils.toUtf8(text)
               option.text = textUTF8
               option.value = i
+              option.selected = (textUTF8 === selectedStudent)
               studentElement.add(option)
               students.push(textUTF8)
             })
@@ -136,10 +137,10 @@ window.App = {
     const studentID = document.getElementById('studentIDText')
     var studentIDText = studentID.value.trim()
     studentID.value = studentIDText
-    if ("" === studentIDText) {
+    if (studentIDText === '') {
       self.setStatus('Student ID must not be blank')
       studentID.focus()
-      return;
+      return
     }
 
     // If a duplicate is entered, just select it and continue
@@ -149,7 +150,7 @@ window.App = {
       const student = document.getElementById('student')
       student.selectedIndex = index
       student.focus()
-      return;
+      return
     }
 
     this.setStatus('Initiating transaction... (please wait)')
@@ -159,8 +160,9 @@ window.App = {
       gb = instance
       return gb.makeStudentID(studentIDText, { from: account })
     }).then(function () {
-      self.setStatus('Transaction complete!')
-      self.refreshStudents()
+      self.setStatus('Created student ID ' + studentIDText)
+      self.refreshStudents(studentIDText)
+      document.getElementById('activity').focus()
     }).catch(function (e) {
       console.log(e)
       self.setStatus('Error creating student ID; see log.')
