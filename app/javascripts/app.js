@@ -18,6 +18,7 @@ var accounts
 var account
 var readOnly = false
 var students = []
+var previousEvaluationCount = 0
 
 window.App = {
   start: function () {
@@ -74,7 +75,7 @@ window.App = {
       var evaluationTable = document.getElementById('evaluations')
       let current
       let promiseChain = Promise.resolve()
-      for (let i = 0; i < evaluationCount; i++) {
+      for (let i = previousEvaluationCount; i < evaluationCount; i++) {
         const makeNextPromise = (current) => () => {
           return gb.getEvaluation(i)
             .then((evaluation) => {
@@ -93,6 +94,8 @@ window.App = {
         }
         promiseChain = promiseChain.then(makeNextPromise(current))
       }
+      // next time start loading from here
+      previousEvaluationCount = evaluationCount
     }).catch(function (e) {
       console.log(e)
       self.setStatus('Error getting evaluations; see log.')
