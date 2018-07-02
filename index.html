@@ -49,23 +49,25 @@
     </div>
     <div id="submission" style="overflow:hidden;">
       <h1>Create a Student ID</h1>
-      <br/><label for="StudentIDText">for identifier:</label><input type="text" id="studentIDText" placeholder="e.g., niub20025563"></input>
+      <br/>
+      <label for="StudentIDText">for identifier:</label><input type="text" id="studentIDText" placeholder="e.g., niub20025563"></input>
       <button id="send" onclick="App.makeStudentID()">Create Student ID</button>
 
       <br/>
       <br/>
 
       <h1>Record an Evaluation</h1>
-      <form id="recordEvaluation">
-        <label for="student">Student ID:</label><select id="student"></select><br/>
-        <label for="activity">Activity:</label><input type="text" id="activity" /><br/>
-        <label for="complexity">Complexity:</label><input type="text" id="complexity" /><br/>
-        <label for="effort">Effort:</label><input type="text" id="effort" /><br/>
-        <label for="weight">Weight:</label><input type="text" id="weight" /><br/>
-        <label for="points">Points:</label><input type="text" id="points" /><br/>
-        <label for="weightedPoints">Weighted Points:</label><input type="text" id="weightedPoints" /><br/>
-        <label for="recordEvaluation">&nbsp;</label><button onClick="App.recordEvaluation()" id="recordEvaluation">Record Evaluation</button>
-      </form>
+      <br/>
+      <label for="student">Student ID:</label><select id="student"></select><br/>
+      <label for="activity">Activity:</label><input type="text" id="activity" /><br/>
+      <label for="complexity">Complexity:</label><input type="text" id="complexity" /><br/>
+      <label for="effort">Effort:</label><input type="text" id="effort" /><br/>
+      <label for="weight">Weight:</label><input type="text" id="weight" /><br/>
+      <label for="points">Points:</label><input type="text" id="points" /><br/>
+      <label for="weightedPoints">Weighted Points:</label><input type="text" id="weightedPoints" /><br/>
+      <label for="recordEvaluation">&nbsp;</label><button onClick="App.recordEvaluation()" id="recordEvaluation">Record Evaluation</button>
+    </div>
+    <div>
       <span id="status"></span>
     </div>
   </div>
