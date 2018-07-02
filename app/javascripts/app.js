@@ -25,6 +25,7 @@ window.App = {
 
     // Bootstrap the GradeBook abstraction for Use.
     GradeBook.setProvider(web3.currentProvider)
+    GradeBook.defaults({ gas: "220000" })
 
     // workaround https://github.com/trufflesuite/truffle-contract/issues/57
     if (typeof GradeBook.currentProvider.sendAsync !== 'function') {
@@ -198,8 +199,11 @@ window.App = {
 }
 
 window.addEventListener('load', function () {
+  if (window.location.search === "?localhost") {
+    window.web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:8545'))
+    readOnly = false
   // Checking if Web3 has been injected by the browser (Mist/MetaMask)
-  if (typeof web3 !== 'undefined') {
+  } else if (typeof web3 !== 'undefined') {
     // Use Mist/MetaMask's provider
     window.web3 = new Web3(web3.currentProvider)
     readOnly = false
