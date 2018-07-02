@@ -17,6 +17,7 @@ var GradeBook = contract(gradeBookArtifacts)
 var accounts
 var account
 var readOnly = false
+var students = [];
 
 window.App = {
   start: function () {
@@ -113,9 +114,11 @@ window.App = {
           return gb.getStudentIDText.call(i)
             .then((text) => {
               var option = document.createElement('option')
-              option.text = web3.utils.toUtf8(text)
+              const textUTF8 = web3.utils.toUtf8(text)
+              option.text = textUTF8
               option.value = i
               studentElement.add(option)
+              students.push(textUTF8)
             })
         }
         promiseChain = promiseChain.then(makeNextPromise(current))
@@ -130,7 +133,24 @@ window.App = {
   makeStudentID: function () {
     var self = this
 
-    var studentIDText = document.getElementById('studentIDText').value
+    const studentID = document.getElementById('studentIDText')
+    var studentIDText = studentID.value.trim()
+    studentID.value = studentIDText
+    if ("" === studentIDText) {
+      self.setStatus('Student ID must not be blank')
+      studentID.focus()
+      return;
+    }
+
+    // If a duplicate is entered, just select it and continue
+    const index = students.indexOf(studentIDText)
+    if (students.indexOf(studentIDText) > -1) {
+      self.setStatus('Student ID already exists, so you may proceed to record an evaluation.')
+      const student = document.getElementById('student')
+      student.selectedIndex = index
+      student.focus()
+      return;
+    }
 
     this.setStatus('Initiating transaction... (please wait)')
 
