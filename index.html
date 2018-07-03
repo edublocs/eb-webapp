@@ -59,12 +59,12 @@
       <h1>Record an Evaluation</h1>
       <br/>
       <label for="student">Student ID:</label><select id="student"></select><br/>
-      <label for="activity">Activity:</label><input type="text" id="activity" /><br/>
-      <label for="complexity">Complexity:</label><input type="text" id="complexity" /><br/>
-      <label for="effort">Effort:</label><input type="text" id="effort" /><br/>
-      <label for="weight">Weight:</label><input type="text" id="weight" /><br/>
-      <label for="points">Points:</label><input type="text" id="points" /><br/>
-      <label for="weightedPoints">Weighted Points:</label><input type="text" id="weightedPoints" /><br/>
+      <label for="activity">Activity:</label><input type="text" id="activity" onkeydown="return App.onlyNums(event);" /><br/>
+      <label for="complexity">Complexity:</label><input type="text" id="complexity" maxLength="3" oninput="App.updateDecimal(this);" onkeydown="return App.onlyNums(event);"/><span class="dec" id="complexity_dec"></span><br/>
+      <label for="effort">Effort:</label><input type="text" id="effort" maxLength="3" oninput ="App.updateDecimal(this);" onkeydown="return App.onlyNums(event);"/><span class="dec" id="effort_dec"></span><br/>
+      <label for="weight">Weight:</label><input type="text" id="weight" maxLength="3" oninput ="App.updateDecimal(this);" onkeydown="return App.onlyNums(event);" /><span class="dec" id="weight_dec"></span><br/>
+      <label for="points">Points:</label><input type="text" id="points" maxLength="3" oninput ="App.updateDecimal(this);" onkeydown="return App.onlyNums(event);" /><span class="dec" id="points_dec"></span><br/>
+      <label for="weightedPoints">Weighted Points:</label><input type="text" id="weightedPoints" maxLength="3" oninput ="App.updateDecimal(this);" onkeydown="return App.onlyNums(event);" /><span class="dec" id="weightedPoints_dec"></span><br/>
       <label for="recordEvaluation">&nbsp;</label><button onClick="App.recordEvaluation()" id="recordEvaluation">Record Evaluation</button>
     </div>
     <div>
