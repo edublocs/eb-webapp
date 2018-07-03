@@ -26,7 +26,7 @@ window.App = {
 
     // Bootstrap the GradeBook abstraction for Use.
     GradeBook.setProvider(web3.currentProvider)
-    GradeBook.defaults({ gas: "220000" })
+    GradeBook.defaults({ gas: '220000' })
 
     // workaround https://github.com/trufflesuite/truffle-contract/issues/57
     if (typeof GradeBook.currentProvider.sendAsync !== 'function') {
@@ -44,6 +44,7 @@ window.App = {
           alert("Couldn't get any accounts! Make sure your Ethereum client is configured correctly.")
         }
         readOnly = true
+        console.log(err)
       } else {
         accounts = accs
         account = accounts[0]
@@ -54,6 +55,19 @@ window.App = {
 
       if (readOnly) { document.getElementById('readonlymessage').style.display = 'block' }
     })
+  },
+
+  updateDecimal: function (control) {
+    document.getElementById(control.id + '_dec').innerHTML = control.value / 10
+  },
+
+  onlyNums: function (e) {
+    var charVal = String.fromCharCode(e.keyCode)
+    if (isNaN(charVal) & e.keyCode !== 37 && e.keyCode !== 39 && e.keyCode !== 8) {
+      return false
+    } else {
+      return true
+    }
   },
 
   setStatus: function (message) {
@@ -202,7 +216,7 @@ window.App = {
 }
 
 window.addEventListener('load', function () {
-  if (window.location.search === "?localhost") {
+  if (window.location.search === '?localhost') {
     window.web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:8545'))
     readOnly = false
   // Checking if Web3 has been injected by the browser (Mist/MetaMask)
