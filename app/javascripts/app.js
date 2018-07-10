@@ -121,7 +121,7 @@ window.App = {
                 evaluation[6 + offset].toNumber(),
                 evaluation[7 + offset].toNumber()
               ])
-              if(evaluationCount -1 === i){
+              if (evaluationCount - 1 === i) {
                 console.log(filter)
                 console.log(evaluations[filter])
               }
