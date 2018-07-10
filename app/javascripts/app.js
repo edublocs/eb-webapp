@@ -25,7 +25,7 @@ prevEvaluationCount['none'] = 0
 prevEvaluationCount['recorderID'] = 0
 prevEvaluationCount['studentID'] = 0
 
-function getQueryVariable(variable) {
+function getQueryVariable (variable) {
   var query = window.location.search.substring(1)
   var vars = query.split('&')
   for (var i = 0; i < vars.length; i++) {
