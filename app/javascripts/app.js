@@ -20,6 +20,18 @@ var readOnly = false
 var students = []
 var previousEvaluationCount = 0
 
+function getQueryVariable(variable) {
+    var query = window.location.search.substring(1)
+    var vars = query.split('&')
+    for (var i = 0; i < vars.length; i++) {
+        var pair = vars[i].split('=')
+        if (decodeURIComponent(pair[0]) == variable) {
+            return decodeURIComponent(pair[1])
+        }
+    }
+    return ""
+}
+
 window.App = {
   start: function () {
     var self = this
@@ -50,7 +62,14 @@ window.App = {
         account = accounts[0]
       }
 
-      self.refreshStudents()
+      document.getElementById('activity').value = getQueryVariable('activity')
+      document.getElementById('complexity').value = getQueryVariable('complexity')
+      document.getElementById('effort').value = getQueryVariable('effort')
+      document.getElementById('weight').value = getQueryVariable('weight')
+      document.getElementById('points').value = getQueryVariable('points')
+      document.getElementById('weightedPoints').value = getQueryVariable('weightedPoints')
+
+      self.refreshStudents(getQueryVariable('studentID'))
       self.refreshEvaluations()
 
       if (readOnly) { document.getElementById('readonlymessage').style.display = 'block' }
@@ -65,6 +84,11 @@ window.App = {
   refreshEvaluations: function () {
     var self = this
 
+    var evaluationTable = document.getElementById('evaluations')
+    if (!evaluationTable) {
+      return
+    }
+
     var gb
     GradeBook.deployed().then(function (instance) {
       gb = instance
@@ -73,7 +97,6 @@ window.App = {
       var evaluationCount = value.valueOf()
       var evaluationCountElement = document.getElementById('EvaluationCount')
       evaluationCountElement.innerHTML = evaluationCount
-      var evaluationTable = document.getElementById('evaluations')
       let current
       let promiseChain = Promise.resolve()
       for (let i = previousEvaluationCount; i < evaluationCount; i++) {
