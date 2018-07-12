@@ -106,16 +106,18 @@ window.App = {
               var row = evaluationTable.insertRow(-1)
               // Recorder ID not currently shown
               // row.insertCell(0).innerHTML = evaluation[0].toNumber()
-              row.insertCell(0).innerHTML = '<a href="https://ropsten.etherscan.io/address/'+evaluation[1]+'">'+evaluation[1].substring(0,8)+'…</a>'
+              row.insertCell(0).innerHTML = '<a href="https://ropsten.etherscan.io/address/' +
+                evaluation[1] + '">' +
+                evaluation[1].substring(0, 8) + '…</a>'
               // Student ID not currently shown
               // row.insertCell(1).innerHTML = evaluation[2].toNumber()
               row.insertCell(1).innerHTML = web3.utils.toUtf8(evaluation[3])
               row.insertCell(2).innerHTML = evaluation[4].toNumber()
-              row.insertCell(3).innerHTML = evaluation[5].toNumber()/10
-              row.insertCell(4).innerHTML = evaluation[6].toNumber()/10
-              row.insertCell(5).innerHTML = evaluation[7].toNumber()/10
-              row.insertCell(6).innerHTML = evaluation[8].toNumber()/10
-              row.insertCell(7).innerHTML = evaluation[9].toNumber()/10
+              row.insertCell(3).innerHTML = evaluation[5].toNumber() / 10
+              row.insertCell(4).innerHTML = evaluation[6].toNumber() / 10
+              row.insertCell(5).innerHTML = evaluation[7].toNumber() / 10
+              row.insertCell(6).innerHTML = evaluation[8].toNumber() / 10
+              row.insertCell(7).innerHTML = evaluation[9].toNumber() / 10
             })
         }
         promiseChain = promiseChain.then(makeNextPromise(current))
@@ -219,12 +221,12 @@ window.App = {
         studentID, activity, complexity, effort, weight, points, weightedPoints, { from: account })
     }).then(function () {
       self.setStatus('Transaction complete!')
-      document.getElementById('activity').value = ""
-      document.getElementById('complexity').value = ""
-      document.getElementById('effort').value = ""
-      document.getElementById('weight').value = ""
-      document.getElementById('points').value = ""
-      document.getElementById('weightedPoints').value = ""
+      document.getElementById('activity').value = ''
+      document.getElementById('complexity').value = ''
+      document.getElementById('effort').value = ''
+      document.getElementById('weight').value = ''
+      document.getElementById('points').value = ''
+      document.getElementById('weightedPoints').value = ''
       self.refreshEvaluations()
     }).catch(function (e) {
       console.log(e)
