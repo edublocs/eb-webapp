@@ -50,18 +50,18 @@ window.getEvaluations = function (filter = 'none', filterValue = 0) {
           : (filter === 'studentID' ? gb.getEvaluationByStudentID(filterValue, i)
             : gb.getEvaluation(i)))
           .then((evaluation) => {
-            var offset = filter === 'none' ? 2 : 0
             result.push([
-              (filter !== 'recorderID' ? evaluation[0].toNumber() : filterValue.valueOf()),
-              (filter !== 'recorderID' ? evaluation[1] : ''),
-              (filter !== 'studentID' ? evaluation[0 + offset].toNumber() : filterValue.valueOf()),
-              (filter !== 'studentID' ? web3.utils.toUtf8(evaluation[1 + offset]) : students[filterValue - 1]),
-              evaluation[2 + offset].toNumber(),
-              evaluation[3 + offset].toNumber(),
-              evaluation[4 + offset].toNumber(),
-              evaluation[5 + offset].toNumber(),
-              evaluation[6 + offset].toNumber(),
-              evaluation[7 + offset].toNumber()
+              evaluation[0].toNumber(), // evaluation ID
+              evaluation[1].toNumber(), // recorderID
+              evaluation[2], // recorderAddress
+              evaluation[3].toNumber(), // studentID
+              evaluation[4], // studentIDText
+              evaluation[5].toNumber(),
+              evaluation[6].toNumber(),
+              evaluation[7].toNumber(),
+              evaluation[8].toNumber(),
+              evaluation[9].toNumber(),
+              evaluation[10].toNumber()
             ])
             if (evaluationCount - 1 === i) {
               console.log(filter)
@@ -83,7 +83,7 @@ window.App = {
 
     // Bootstrap the GradeBook abstraction for Use.
     GradeBook.setProvider(web3.currentProvider)
-    GradeBook.defaults({ gas: '220000' })
+    GradeBook.defaults({ gas: '250000' })
 
     // workaround https://github.com/trufflesuite/truffle-contract/issues/57
     if (typeof GradeBook.currentProvider.sendAsync !== 'function') {
@@ -152,17 +152,17 @@ window.App = {
               // Recorder ID not currently shown
               // row.insertCell(0).innerHTML = evaluation[0].toNumber()
               row.insertCell(0).innerHTML = '<a href="https://ropsten.etherscan.io/address/' +
-                evaluation[1] + '">' +
-                evaluation[1].substring(0, 8) + '…</a>'
+                evaluation[2] + '">' +
+                evaluation[2].substring(0, 8) + '…</a>'
               // Student ID not currently shown
               // row.insertCell(1).innerHTML = evaluation[2].toNumber()
-              row.insertCell(1).innerHTML = web3.utils.toUtf8(evaluation[3])
-              row.insertCell(2).innerHTML = evaluation[4].toNumber()
-              row.insertCell(3).innerHTML = evaluation[5].toNumber() / 10
-              row.insertCell(4).innerHTML = evaluation[6].toNumber() / 10
-              row.insertCell(5).innerHTML = evaluation[7].toNumber() / 10
-              row.insertCell(6).innerHTML = evaluation[8].toNumber() / 10
-              row.insertCell(7).innerHTML = evaluation[9].toNumber() / 10
+              row.insertCell(1).innerHTML = web3.utils.toUtf8(evaluation[4])
+              row.insertCell(2).innerHTML = evaluation[5].toNumber()
+              row.insertCell(3).innerHTML = evaluation[6].toNumber() / 10
+              row.insertCell(4).innerHTML = evaluation[7].toNumber() / 10
+              row.insertCell(5).innerHTML = evaluation[8].toNumber() / 10
+              row.insertCell(6).innerHTML = evaluation[9].toNumber() / 10
+              row.insertCell(7).innerHTML = evaluation[10].toNumber() / 10
             })
         }
         promiseChain = promiseChain.then(makeNextPromise(current))
