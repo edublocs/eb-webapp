@@ -32,6 +32,51 @@ function getQueryVariable (variable) {
   return ''
 }
 
+window.getEvaluations = function (filter = 'none', filterValue = 0) {
+  var result = []
+  var gb
+  GradeBook.deployed().then(function (instance) {
+    gb = instance
+    return (filter === 'recorderID' ? gb.getEvaluationCountByRecorderID.call(filterValue)
+      : (filter === 'studentID' ? gb.getEvaluationCountByStudentID.call(filterValue)
+        : gb.getEvaluationCount.call()))
+  }).then(function (value) {
+    var evaluationCount = value.valueOf()
+    let current
+    let promiseChain = Promise.resolve()
+    for (let i = 0; i < evaluationCount; i++) {
+      const makeNextPromise = (current) => () => {
+        return (filter === 'recorderID' ? gb.getEvaluationByRecorderID(filterValue, i)
+          : (filter === 'studentID' ? gb.getEvaluationByStudentID(filterValue, i)
+            : gb.getEvaluation(i)))
+          .then((evaluation) => {
+            var offset = filter === 'none' ? 2 : 0
+            result.push([
+              (filter !== 'recorderID' ? evaluation[0].toNumber() : filterValue.valueOf()),
+              (filter !== 'recorderID' ? evaluation[1] : ''),
+              (filter !== 'studentID' ? evaluation[0 + offset].toNumber() : filterValue.valueOf()),
+              (filter !== 'studentID' ? web3.utils.toUtf8(evaluation[1 + offset]) : students[filterValue - 1]),
+              evaluation[2 + offset].toNumber(),
+              evaluation[3 + offset].toNumber(),
+              evaluation[4 + offset].toNumber(),
+              evaluation[5 + offset].toNumber(),
+              evaluation[6 + offset].toNumber(),
+              evaluation[7 + offset].toNumber()
+            ])
+            if (evaluationCount - 1 === i) {
+              console.log(filter)
+              console.log(result)
+              return result
+            }
+          })
+      }
+      promiseChain = promiseChain.then(makeNextPromise(current))
+    }
+  }).catch(function (e) {
+    console.log(e)
+  })
+}
+
 window.App = {
   start: function () {
     var self = this
