@@ -6,13 +6,15 @@ import '../stylesheets/app.css'
 
 // Import libraries we need.
 import { default as Web3 } from 'web3'
-import ZeroClientProvider from 'web3-provider-engine/zero.js';
+import ZeroClientProvider from 'web3-provider-engine/zero.js'
 import { default as contract } from 'truffle-contract'
 import { default as edublocs } from './edublocs.js'
-window.edublocs = edublocs
 
 // Import our contract artifacts and turn them into usable abstractions.
 import gradeBookArtifacts from '../../build/contracts/GradeBook.json'
+
+// rampant globalism
+window.edublocs = edublocs
 
 // GradeBook is our usable abstraction, which we'll use through the code below.
 var GradeBook = contract(gradeBookArtifacts)
@@ -21,7 +23,6 @@ var accounts
 var account
 var readOnly = false
 var students = []
-var previousEvaluationCount = 0
 
 function getQueryVariable (variable) {
   var query = window.location.search.substring(1)
@@ -38,7 +39,7 @@ function getQueryVariable (variable) {
 window.App = {
 
   gradeBook: async function () {
-    return await edublocs.gradeBook()
+    return edublocs.gradeBook()
   },
 
   start: async function () {
@@ -55,7 +56,7 @@ window.App = {
       }
     }
 
-    window.gradebook = await GradeBook.deployed();
+    window.gradebook = await GradeBook.deployed()
 
     // Get the initial account balance so it can be displayed.
     web3.eth.getAccounts(function (err, accs) {
@@ -92,8 +93,6 @@ window.App = {
   },
 
   refreshEvaluations: async function () {
-    var self = this
-
     var evaluationTable = document.getElementById('evaluations')
     if (!evaluationTable) {
       return
@@ -200,7 +199,7 @@ window.App = {
 
     var gb = await self.gradeBook()
     gb.recordEvaluation(
-        studentID, activity, complexity, effort, weight, points, weightedPoints, { from: account }).then(function () {
+      studentID, activity, complexity, effort, weight, points, weightedPoints, { from: account }).then(function () {
       self.setStatus('Transaction complete!')
       document.getElementById('activity').value = ''
       document.getElementById('complexity').value = ''
@@ -228,16 +227,16 @@ window.addEventListener('load', function () {
   } else {
     // fallback to infura
     window.web3 = new Web3(
-            ZeroClientProvider({
-              static: {
-                eth_syncing: false,
-                web3_clientVersion: 'ZeroClientProvider',
-              },
-              pollingInterval: 99999999, // not interested in polling for new blocks
-              rpcUrl: 'https://ropsten.infura.io/nxqvLpMcFgty1XUFr67x',
-              // account mgmt
-              getAccounts: (cb) => cb(null, [])
-            }))
+      ZeroClientProvider({
+        static: {
+          eth_syncing: false,
+          web3_clientVersion: 'ZeroClientProvider'
+        },
+        pollingInterval: 99999999, // not interested in polling for new blocks
+        rpcUrl: 'https://ropsten.infura.io/nxqvLpMcFgty1XUFr67x',
+        // account mgmt
+        getAccounts: (cb) => cb(null, [])
+      }))
     readOnly = true
   }
 
