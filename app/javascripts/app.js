@@ -23,6 +23,8 @@ var accounts
 var account
 var readOnly = false
 var students = []
+var refreshingEvaluations = false
+var refreshingStudents = false
 
 function getQueryVariable (variable) {
   var query = window.location.search.substring(1)
@@ -93,6 +95,13 @@ window.App = {
   },
 
   refreshEvaluations: async function () {
+    // handle multiple start events
+    if (refreshingEvaluations) {
+      return
+    } else {
+      refreshingEvaluations = true
+    }
+
     var evaluationTable = document.getElementById('evaluationTable')
     if (!evaluationTable) {
       return
@@ -115,9 +124,18 @@ window.App = {
       row.insertCell(7).innerHTML = evals[i][9] / 10
       row.insertCell(8).innerHTML = evals[i][10] / 10
     }
+
+    refreshingEvaluations = false
   },
 
   refreshStudents: async function (selectedStudent) {
+    // handle multiple start events
+    if (refreshingStudents) {
+      return
+    } else {
+      refreshingStudents = true
+    }
+
     var self = this
 
     var gb = await self.gradeBook()
@@ -141,8 +159,10 @@ window.App = {
         promiseChain = promiseChain.then(makeNextPromise(current))
       };
       studentElement.innerHTML = value.valueOf()
+      refreshingStudents = false
     }).catch(function (e) {
       console.log(e)
+      refreshingStudents = false
       self.setStatus('Error getting evaluation count; see log.')
     })
   },
