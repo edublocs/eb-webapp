@@ -69,6 +69,7 @@ async function getEvaluations (filters = []) {
       evaluation[9].toNumber(),
       evaluation[10].toNumber(),
       evnt.blockNumber,
+      evnt.transactionHash,
       block.timestamp
     ])
   }
