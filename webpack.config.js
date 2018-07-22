@@ -15,6 +15,10 @@ module.exports = {
     new HtmlWebpackPlugin({
       filename: 'neweval.html',
       template: './app/neweval.html'
+    }),
+    new HtmlWebpackPlugin({
+      filename: 'view.html',
+      template: './app/view.html'
     })
   ],
   module: {

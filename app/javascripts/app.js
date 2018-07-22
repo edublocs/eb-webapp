@@ -87,12 +87,14 @@ window.App = {
     account = accounts ? accounts[0] : null
 
     // set default values (if passed in)
-    document.getElementById('activity').value = getQueryVariable('activity')
-    document.getElementById('complexity').value = getQueryVariable('complexity')
-    document.getElementById('effort').value = getQueryVariable('effort')
-    document.getElementById('weight').value = getQueryVariable('weight')
-    document.getElementById('points').value = getQueryVariable('points')
-    document.getElementById('weightedPoints').value = getQueryVariable('weightedPoints')
+    if (document.getElementById('record_evaluation')) {
+      document.getElementById('activity').value = getQueryVariable('activity')
+      document.getElementById('complexity').value = getQueryVariable('complexity')
+      document.getElementById('effort').value = getQueryVariable('effort')
+      document.getElementById('weight').value = getQueryVariable('weight')
+      document.getElementById('points').value = getQueryVariable('points')
+      document.getElementById('weightedPoints').value = getQueryVariable('weightedPoints')
+    }
 
     // allow them to pass in the student text or the student ID.
     var filters = []
@@ -118,7 +120,7 @@ window.App = {
     }
     self.refreshEvaluations(filters)
 
-    if (readOnly) { document.getElementById('read_only_message').style.display = 'block' }
+    if (readOnly && document.getElementById('read_only_message')) { document.getElementById('read_only_message').style.display = 'block' }
   },
 
   setStatus: function (message) {
@@ -162,7 +164,7 @@ window.App = {
 
   refreshStudents: async function (selectedStudent) {
     // handle multiple start events
-    if (refreshingStudents) {
+    if (refreshingStudents || !document.getElementById('record_evaluation')) {
       return
     } else {
       refreshingStudents = true
