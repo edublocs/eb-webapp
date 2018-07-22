@@ -159,18 +159,18 @@ window.App = {
     // walk the array, populating the table.
     for (let i = 0; i < evals.length; i++) {
       var row = evaluationTable.insertRow(-1)
-      row.insertCell(0).innerHTML = '<a href="https://ropsten.etherscan.io/tx/' + evals[i][12] + '">' +
-      new Date(evals[i][13] * 1000).toLocaleString() + '</a>'
+      row.insertCell(0).innerHTML = '<a href="https://ropsten.etherscan.io/tx/' + evals[i].transactionHash + '">' +
+      new Date(evals[i].timestamp * 1000).toLocaleString() + '</a>'
       row.insertCell(1).innerHTML = '<a href="https://ropsten.etherscan.io/address/' +
-      evals[i][2] + '">' +
-      evals[i][2].substring(0, 8) + '…</a>'
-      row.insertCell(2).innerHTML = web3.utils.toUtf8(evals[i][4])
-      row.insertCell(3).innerHTML = evals[i][5]
-      row.insertCell(4).innerHTML = evals[i][6] / 10
-      row.insertCell(5).innerHTML = evals[i][7] / 10
-      row.insertCell(6).innerHTML = evals[i][8] / 10
-      row.insertCell(7).innerHTML = evals[i][9] / 10
-      row.insertCell(8).innerHTML = evals[i][10] / 10
+      evals[i].recorderAddress + '">' +
+      evals[i].recorderAddress.substring(0, 8) + '…</a>'
+      row.insertCell(2).innerHTML = evals[i].studentIDText
+      row.insertCell(3).innerHTML = evals[i].activity
+      row.insertCell(4).innerHTML = evals[i].complexity / 10
+      row.insertCell(5).innerHTML = evals[i].effort / 10
+      row.insertCell(6).innerHTML = evals[i].weight / 10
+      row.insertCell(7).innerHTML = evals[i].points / 10
+      row.insertCell(8).innerHTML = evals[i].weightedPoints / 10
     }
 
     refreshingEvaluations = false

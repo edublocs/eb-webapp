@@ -54,24 +54,30 @@ async function getEvaluations (filters = []) {
     if (filters.evaluationID && !filters.evaluationID.includes(evaluationID)) { continue }
     if (filters.activity && !filters.activity.includes(activity)) { continue }
 
+    // find the event that matches this evaluation ID; lets us find out
+    // the block number and transaction hash, which are not available
+    // from within Solidity because we don't store them ($$$).
     var evnt = findEventByEvaluationID(evaluationID, events)
+
+    // get the block for the event so we can figure out the timestamp
     var block = await web3.eth.getBlock(evnt.blockNumber)
-    result.push([
-      evaluationID,
-      recorderID,
-      evaluation[2], // recorderAddress
-      studentID,
-      evaluation[4], // studentIDText
-      activity,
-      evaluation[6].toNumber(),
-      evaluation[7].toNumber(),
-      evaluation[8].toNumber(),
-      evaluation[9].toNumber(),
-      evaluation[10].toNumber(),
-      evnt.blockNumber,
-      evnt.transactionHash,
-      block.timestamp
-    ])
+
+    result.push({
+      evaluationID: evaluationID,
+      recorderID: recorderID,
+      recorderAddress: evaluation[2],
+      studentID: studentID,
+      studentIDText: web3.utils.toUtf8(evaluation[4]),
+      activity: activity,
+      complexity: evaluation[6].toNumber(),
+      effort: evaluation[7].toNumber(),
+      weight: evaluation[8].toNumber(),
+      points: evaluation[9].toNumber(),
+      weightedPoints: evaluation[10].toNumber(),
+      blockNumber: evnt.blockNumber,
+      transactionHash: evnt.transactionHash,
+      timestamp: block.timestamp
+    })
   }
 
   return result
@@ -94,7 +100,7 @@ async function getEvents (filters = []) {
   filters.toBlock = 'latest'
   // recorderID, studentID and activity are valid filters because they
   // are indexed.  Any other properties (such as evaluationID) must be
-  // filtered out after the fact.
+  // filtered out after the fact, because they are ignored.
 
   try {
     var events = gb.allEvents(filters)
