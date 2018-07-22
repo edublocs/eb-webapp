@@ -198,7 +198,7 @@ window.App = {
 
     this.setStatus('Initiating transaction... (please wait)')
 
-    var gb = self.gradeBook()
+    var gb = await self.gradeBook()
     gb.recordEvaluation(
         studentID, activity, complexity, effort, weight, points, weightedPoints, { from: account }).then(function () {
       self.setStatus('Transaction complete!')

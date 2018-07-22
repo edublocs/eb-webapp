@@ -77,7 +77,6 @@ async function getEvaluations (filters = []) {
     ])
   }
 
-  console.log(result)
   return result
 }
 
