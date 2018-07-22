@@ -27,6 +27,7 @@ var refreshingEvaluations = false
 var refreshingStudents = false
 var alreadyStarted = false
 
+// handle URL arguments
 function getQueryVariable (variable) {
   var query = window.location.search.substring(1)
   var vars = query.split('&')
@@ -66,8 +67,10 @@ window.App = {
       }
     }
 
+    // get the deployed contract
     window.gradebook = await GradeBook.deployed()
 
+    // when not running in read-only mode due to our provider...
     if (!readOnly) {
       // get the account we'll use to make transactions
       try {
@@ -96,7 +99,8 @@ window.App = {
       document.getElementById('weightedPoints').value = getQueryVariable('weightedPoints')
     }
 
-    // allow them to pass in the student text or the student ID.
+    // allow them to pass in the student text or the student ID
+    // as default for the student and for filtering the evaluations
     var filters = []
     var studentIDText = ''
     if (getQueryVariable('studentID')) {
@@ -107,8 +111,10 @@ window.App = {
       filters.studentID = await window.gradebook.getStudentID(studentIDText)
     }
 
+    // load the student list with the default selected (if any)
     self.refreshStudents(studentIDText)
 
+    // apply other filters
     if (getQueryVariable('recorderID')) {
       filters.recorderID = getQueryVariable('recorderID')
     }
@@ -118,6 +124,8 @@ window.App = {
     if (getQueryVariable('evaluationID')) {
       filters.evaluationID = getQueryVariable('evaluationID')
     }
+
+    // load the evaluations into the table
     self.refreshEvaluations(filters)
 
     // for pages that have the read-only warning, turn it on if appropriate
@@ -139,13 +147,16 @@ window.App = {
       refreshingEvaluations = true
     }
 
+    // if there's no table to fill in, there's nothing to do
     var evaluationTable = document.getElementById('evaluationTable')
     if (!evaluationTable) {
       return
     }
 
+    // get an array of results
     var evals = await edublocs.getEvaluations(filters)
 
+    // walk the array, populating the table.
     for (let i = 0; i < evals.length; i++) {
       var row = evaluationTable.insertRow(-1)
       row.insertCell(0).innerHTML = '<a href="https://ropsten.etherscan.io/tx/' + evals[i][12] + '">' +
@@ -165,8 +176,9 @@ window.App = {
     refreshingEvaluations = false
   },
 
+  // load the dropdown list of students
   refreshStudents: async function (selectedStudent) {
-    // handle multiple start events
+    // handle multiple start events; stop if there's no section for the eval
     if (refreshingStudents || !document.getElementById('record_evaluation')) {
       return
     } else {
@@ -204,6 +216,7 @@ window.App = {
     })
   },
 
+  // Create a student ID from the text
   makeStudentID: async function () {
     var self = this
 
@@ -239,6 +252,7 @@ window.App = {
     })
   },
 
+  // Record the evaluation
   recordEvaluation: async function () {
     var self = this
 
@@ -256,6 +270,7 @@ window.App = {
     gb.recordEvaluation(
       studentID, activity, complexity, effort, weight, points, weightedPoints, { from: account }).then(function () {
       self.setStatus('Transaction complete!')
+      // set the values to blank so they won't accidentally submit again
       document.getElementById('activity').value = ''
       document.getElementById('complexity').value = ''
       document.getElementById('effort').value = ''
