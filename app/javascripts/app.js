@@ -7,6 +7,8 @@ import '../stylesheets/app.css'
 // Import libraries we need.
 import { default as Web3 } from 'web3'
 import { default as contract } from 'truffle-contract'
+import { default as edublocs } from './edublocs.js'
+window.edublocs = edublocs
 
 // Import our contract artifacts and turn them into usable abstractions.
 import gradeBookArtifacts from '../../build/contracts/GradeBook.json'
@@ -32,51 +34,6 @@ function getQueryVariable (variable) {
   return ''
 }
 
-window.getEvaluations = function (filter = 'none', filterValue = 0) {
-  var result = []
-  var gb
-  GradeBook.deployed().then(function (instance) {
-    gb = instance
-    return (filter === 'recorderID' ? gb.getEvaluationCountByRecorderID.call(filterValue)
-      : (filter === 'studentID' ? gb.getEvaluationCountByStudentID.call(filterValue)
-        : gb.getEvaluationCount.call()))
-  }).then(function (value) {
-    var evaluationCount = value.valueOf()
-    let current
-    let promiseChain = Promise.resolve()
-    for (let i = 0; i < evaluationCount; i++) {
-      const makeNextPromise = (current) => () => {
-        return (filter === 'recorderID' ? gb.getEvaluationByRecorderID(filterValue, i)
-          : (filter === 'studentID' ? gb.getEvaluationByStudentID(filterValue, i)
-            : gb.getEvaluation(i)))
-          .then((evaluation) => {
-            result.push([
-              evaluation[0].toNumber(), // evaluation ID
-              evaluation[1].toNumber(), // recorderID
-              evaluation[2], // recorderAddress
-              evaluation[3].toNumber(), // studentID
-              evaluation[4], // studentIDText
-              evaluation[5].toNumber(),
-              evaluation[6].toNumber(),
-              evaluation[7].toNumber(),
-              evaluation[8].toNumber(),
-              evaluation[9].toNumber(),
-              evaluation[10].toNumber()
-            ])
-            if (evaluationCount - 1 === i) {
-              console.log(filter)
-              console.log(result)
-              return result
-            }
-          })
-      }
-      promiseChain = promiseChain.then(makeNextPromise(current))
-    }
-  }).catch(function (e) {
-    console.log(e)
-  })
-}
-
 window.App = {
   start: function () {
     var self = this
@@ -91,6 +48,10 @@ window.App = {
         return GradeBook.currentProvider.send.apply(GradeBook.currentProvider, arguments)
       }
     }
+
+    GradeBook.deployed().then(function (instance) {
+      window.gradebook = instance
+    })
 
     // Get the initial account balance so it can be displayed.
     web3.eth.getAccounts(function (err, accs) {
@@ -134,11 +95,8 @@ window.App = {
       return
     }
 
-    var gb
-    GradeBook.deployed().then(function (instance) {
-      gb = instance
-      return gb.getEvaluationCount.call()
-    }).then(function (value) {
+    var gb = window.gradebook
+    gb.getEvaluationCount.call().then(function (value) {
       var evaluationCount = value.valueOf()
       var evaluationCountElement = document.getElementById('EvaluationCount')
       evaluationCountElement.innerHTML = evaluationCount
@@ -178,11 +136,8 @@ window.App = {
   refreshStudents: function (selectedStudent) {
     var self = this
 
-    var gb
-    GradeBook.deployed().then(function (instance) {
-      gb = instance
-      return gb.getStudentCount.call()
-    }).then(function (value) {
+    var gb = window.gradebook
+    gb.getStudentCount.call().then(function (value) {
       var studentElement = document.getElementById('student')
       let current
       let promiseChain = Promise.resolve()
@@ -232,11 +187,8 @@ window.App = {
 
     this.setStatus('Initiating transaction... (please wait)')
 
-    var gb
-    GradeBook.deployed().then(function (instance) {
-      gb = instance
-      return gb.makeStudentID(studentIDText, { from: account })
-    }).then(function () {
+    var gb = window.gradebook
+    gb.makeStudentID(studentIDText, { from: account }).then(function () {
       self.setStatus('Created student ID ' + studentIDText)
       self.refreshStudents(studentIDText)
       document.getElementById('activity').focus()
@@ -259,12 +211,9 @@ window.App = {
 
     this.setStatus('Initiating transaction... (please wait)')
 
-    var gb
-    GradeBook.deployed().then(function (instance) {
-      gb = instance
-      return gb.recordEvaluation(
-        studentID, activity, complexity, effort, weight, points, weightedPoints, { from: account })
-    }).then(function () {
+    var gb = window.gradebook
+    gb.recordEvaluation(
+        studentID, activity, complexity, effort, weight, points, weightedPoints, { from: account }).then(function () {
       self.setStatus('Transaction complete!')
       document.getElementById('activity').value = ''
       document.getElementById('complexity').value = ''
