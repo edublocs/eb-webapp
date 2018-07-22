@@ -25,6 +25,7 @@ var readOnly = false
 var students = []
 var refreshingEvaluations = false
 var refreshingStudents = false
+var alreadyStarted = false
 
 function getQueryVariable (variable) {
   var query = window.location.search.substring(1)
@@ -45,6 +46,13 @@ window.App = {
   },
 
   start: async function () {
+    // handle multiple start events
+    if (alreadyStarted) {
+      return
+    } else {
+      alreadyStarted = true
+    }
+
     var self = this
 
     // Bootstrap the GradeBook abstraction for Use.
@@ -59,34 +67,58 @@ window.App = {
     }
 
     window.gradebook = await GradeBook.deployed()
-
-    // Get the initial account balance so it can be displayed.
-    web3.eth.getAccounts(function (err, accs) {
-      if (accs && accs.length === 0 && !readOnly) {
+ 
+    if (!readOnly) {
+      // get the account we'll use to make transactions
+      try {
+        accounts = await web3.eth.getAccounts()
+      } catch (error) {
+        console.log(error)
+      }
+      if (accounts.length === 0) {
         if (web3.currentProvider.isMetaMask === true) {
           alert('Please log in to MetaMask and refresh this page in order to record new data.')
         } else {
           alert("Couldn't get any accounts! Make sure your Ethereum client is configured correctly.")
         }
         readOnly = true
-        console.log(err)
-      } else {
-        accounts = accs
-        account = accounts ? accounts[0] : null
       }
+    }
+    account = accounts ? accounts[0] : null
 
-      document.getElementById('activity').value = getQueryVariable('activity')
-      document.getElementById('complexity').value = getQueryVariable('complexity')
-      document.getElementById('effort').value = getQueryVariable('effort')
-      document.getElementById('weight').value = getQueryVariable('weight')
-      document.getElementById('points').value = getQueryVariable('points')
-      document.getElementById('weightedPoints').value = getQueryVariable('weightedPoints')
+    // set default values (if passed in)
+    document.getElementById('activity').value = getQueryVariable('activity')
+    document.getElementById('complexity').value = getQueryVariable('complexity')
+    document.getElementById('effort').value = getQueryVariable('effort')
+    document.getElementById('weight').value = getQueryVariable('weight')
+    document.getElementById('points').value = getQueryVariable('points')
+    document.getElementById('weightedPoints').value = getQueryVariable('weightedPoints')
 
-      self.refreshStudents(getQueryVariable('studentID'))
-      self.refreshEvaluations()
+    // allow them to pass in the student text or the student ID.
+    var filters = []
+    var studentIDText = ''
+    if (getQueryVariable('studentID')) {
+      filters.studentID = getQueryVariable('studentID')
+      studentIDText = web3.utils.toUtf8(await window.gradebook.getStudentIDText(filters.studentID))
+    } else if (getQueryVariable('student')) {
+      studentIDText = getQueryVariable('student')
+      filters.studentID = await window.gradebook.getStudentID(studentIDText)
+    }
 
-      if (readOnly) { document.getElementById('read_only_message').style.display = 'block' }
-    })
+    self.refreshStudents(studentIDText)
+
+    if (getQueryVariable('recorderID')){
+      filters.recorderID = getQueryVariable('recorderID')
+    }
+    if (getQueryVariable('activity')){
+      filters.activity = getQueryVariable('activity')
+    }
+    if (getQueryVariable('evaluationID')){
+      filters.evaluationID = getQueryVariable('evaluationID')
+    }
+    self.refreshEvaluations(filters)
+
+    if (readOnly) { document.getElementById('read_only_message').style.display = 'block' }
   },
 
   setStatus: function (message) {
@@ -94,7 +126,7 @@ window.App = {
     status.innerHTML = message
   },
 
-  refreshEvaluations: async function () {
+  refreshEvaluations: async function (filters = []) {
     // handle multiple start events
     if (refreshingEvaluations) {
       return
@@ -107,7 +139,7 @@ window.App = {
       return
     }
 
-    var evals = await edublocs.getEvaluations()
+    var evals = await edublocs.getEvaluations(filters)
 
     for (let i = 0; i < evals.length; i++) {
       var row = evaluationTable.insertRow(-1)
@@ -234,12 +266,13 @@ window.App = {
 }
 
 window.addEventListener('load', function () {
-  if (window.location.search === '?localhost') {
+
+  if (getQueryVariable('localhost')) {
     window.web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:8545'))
     readOnly = false
-  // Checking if Web3 has been injected by the browser (Mist/MetaMask)
-  } else if (typeof web3 !== 'undefined') {
-    // Use Mist/MetaMask's provider
+  // Checking if Web3 has been injected by the browser (MetaMask)
+  } else if (typeof web3 !== 'undefined' && web3.currentProvider.isMetaMask) {
+    // Use MetaMask's provider
     window.web3 = new Web3(web3.currentProvider)
     readOnly = false
   } else {
