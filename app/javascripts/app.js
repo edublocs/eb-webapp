@@ -83,7 +83,7 @@ window.App = {
       self.refreshStudents(getQueryVariable('studentID'))
       self.refreshEvaluations()
 
-      if (readOnly) { document.getElementById('readonlymessage').style.display = 'block' }
+      if (readOnly) { document.getElementById('read_only_message').style.display = 'block' }
     })
   },
 
