@@ -6,6 +6,7 @@ import '../stylesheets/app.css'
 
 // Import libraries we need.
 import { default as Web3 } from 'web3'
+import ZeroClientProvider from 'web3-provider-engine/zero.js';
 import { default as contract } from 'truffle-contract'
 import { default as edublocs } from './edublocs.js'
 window.edublocs = edublocs
@@ -35,7 +36,12 @@ function getQueryVariable (variable) {
 }
 
 window.App = {
-  start: function () {
+
+  gradeBook: async function () {
+    return await edublocs.gradeBook()
+  },
+
+  start: async function () {
     var self = this
 
     // Bootstrap the GradeBook abstraction for Use.
@@ -49,13 +55,11 @@ window.App = {
       }
     }
 
-    GradeBook.deployed().then(function (instance) {
-      window.gradebook = instance
-    })
+    window.gradebook = await GradeBook.deployed();
 
     // Get the initial account balance so it can be displayed.
     web3.eth.getAccounts(function (err, accs) {
-      if (accs.length === 0 && !readOnly) {
+      if (accs && accs.length === 0 && !readOnly) {
         if (web3.currentProvider.isMetaMask === true) {
           alert('Please log in to MetaMask and refresh this page in order to record new data.')
         } else {
@@ -65,7 +69,7 @@ window.App = {
         console.log(err)
       } else {
         accounts = accs
-        account = accounts[0]
+        account = accounts ? accounts[0] : null
       }
 
       document.getElementById('activity').value = getQueryVariable('activity')
@@ -87,7 +91,7 @@ window.App = {
     status.innerHTML = message
   },
 
-  refreshEvaluations: function () {
+  refreshEvaluations: async function () {
     var self = this
 
     var evaluationTable = document.getElementById('evaluations')
@@ -95,48 +99,31 @@ window.App = {
       return
     }
 
-    var gb = window.gradebook
-    gb.getEvaluationCount.call().then(function (value) {
-      var evaluationCount = value.valueOf()
-      var evaluationCountElement = document.getElementById('EvaluationCount')
-      evaluationCountElement.innerHTML = evaluationCount
-      let current
-      let promiseChain = Promise.resolve()
-      for (let i = previousEvaluationCount; i < evaluationCount; i++) {
-        const makeNextPromise = (current) => () => {
-          return gb.getEvaluation(i)
-            .then((evaluation) => {
-              var row = evaluationTable.insertRow(-1)
-              // Recorder ID not currently shown
-              // row.insertCell(0).innerHTML = evaluation[0].toNumber()
-              row.insertCell(0).innerHTML = '<a href="https://ropsten.etherscan.io/address/' +
-                evaluation[2] + '">' +
-                evaluation[2].substring(0, 8) + '…</a>'
-              // Student ID not currently shown
-              // row.insertCell(1).innerHTML = evaluation[2].toNumber()
-              row.insertCell(1).innerHTML = web3.utils.toUtf8(evaluation[4])
-              row.insertCell(2).innerHTML = evaluation[5].toNumber()
-              row.insertCell(3).innerHTML = evaluation[6].toNumber() / 10
-              row.insertCell(4).innerHTML = evaluation[7].toNumber() / 10
-              row.insertCell(5).innerHTML = evaluation[8].toNumber() / 10
-              row.insertCell(6).innerHTML = evaluation[9].toNumber() / 10
-              row.insertCell(7).innerHTML = evaluation[10].toNumber() / 10
-            })
-        }
-        promiseChain = promiseChain.then(makeNextPromise(current))
-      }
-      // next time start loading from here
-      previousEvaluationCount = evaluationCount
-    }).catch(function (e) {
-      console.log(e)
-      self.setStatus('Error getting evaluations; see log.')
-    })
+    var evals = await edublocs.getEvaluations()
+
+    for (let i = 0; i < evals.length; i++) {
+      var row = evaluationTable.insertRow(-1)
+      // Recorder ID not currently shown
+      // row.insertCell(0).innerHTML = evaluation[0].toNumber()
+      row.insertCell(0).innerHTML = '<a href="https://ropsten.etherscan.io/address/' +
+      evals[i][2] + '">' +
+      evals[i][2].substring(0, 8) + '…</a>'
+      // Student ID not currently shown
+      // row.insertCell(1).innerHTML = evaluation[2].toNumber()
+      row.insertCell(1).innerHTML = web3.utils.toUtf8(evals[i][4])
+      row.insertCell(2).innerHTML = evals[i][5]
+      row.insertCell(3).innerHTML = evals[i][6] / 10
+      row.insertCell(4).innerHTML = evals[i][7] / 10
+      row.insertCell(5).innerHTML = evals[i][8] / 10
+      row.insertCell(6).innerHTML = evals[i][9] / 10
+      row.insertCell(7).innerHTML = evals[i][10] / 10
+    }
   },
 
-  refreshStudents: function (selectedStudent) {
+  refreshStudents: async function (selectedStudent) {
     var self = this
 
-    var gb = window.gradebook
+    var gb = await self.gradeBook()
     gb.getStudentCount.call().then(function (value) {
       var studentElement = document.getElementById('student')
       let current
@@ -163,7 +150,7 @@ window.App = {
     })
   },
 
-  makeStudentID: function () {
+  makeStudentID: async function () {
     var self = this
 
     const studentID = document.getElementById('studentIDText')
@@ -187,10 +174,10 @@ window.App = {
 
     this.setStatus('Initiating transaction... (please wait)')
 
-    var gb = window.gradebook
-    gb.makeStudentID(studentIDText, { from: account }).then(function () {
+    var gb = await self.gradeBook()
+    gb.makeStudentID(studentIDText, { from: account }).then(async function () {
       self.setStatus('Created student ID ' + studentIDText)
-      self.refreshStudents(studentIDText)
+      await self.refreshStudents(studentIDText)
       document.getElementById('activity').focus()
     }).catch(function (e) {
       console.log(e)
@@ -198,7 +185,7 @@ window.App = {
     })
   },
 
-  recordEvaluation: function () {
+  recordEvaluation: async function () {
     var self = this
 
     var studentID = document.getElementById('student').value
@@ -211,7 +198,7 @@ window.App = {
 
     this.setStatus('Initiating transaction... (please wait)')
 
-    var gb = window.gradebook
+    var gb = self.gradeBook()
     gb.recordEvaluation(
         studentID, activity, complexity, effort, weight, points, weightedPoints, { from: account }).then(function () {
       self.setStatus('Transaction complete!')
@@ -240,7 +227,17 @@ window.addEventListener('load', function () {
     readOnly = false
   } else {
     // fallback to infura
-    window.web3 = new Web3(new Web3.providers.HttpProvider('https://ropsten.infura.io/nxqvLpMcFgty1XUFr67x'))
+    window.web3 = new Web3(
+            ZeroClientProvider({
+              static: {
+                eth_syncing: false,
+                web3_clientVersion: 'ZeroClientProvider',
+              },
+              pollingInterval: 99999999, // not interested in polling for new blocks
+              rpcUrl: 'https://ropsten.infura.io/nxqvLpMcFgty1XUFr67x',
+              // account mgmt
+              getAccounts: (cb) => cb(null, [])
+            }))
     readOnly = true
   }
 

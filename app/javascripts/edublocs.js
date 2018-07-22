@@ -16,13 +16,9 @@ var GradeBook = contract(gradeBookArtifacts)
 
 async function gradeBook() {
   if (window.gradebook) {
-    console.log("already set")
-    console.log(window.gradebook)
     return window.gradebook
   } else {
-    console.log("not set")
     window.gradebook = await GradeBook.deployed()
-    console.log(window.gradebook)
     return window.gradebook
   }
 }
