@@ -67,7 +67,7 @@ window.App = {
     }
 
     window.gradebook = await GradeBook.deployed()
- 
+
     if (!readOnly) {
       // get the account we'll use to make transactions
       try {
@@ -109,18 +109,21 @@ window.App = {
 
     self.refreshStudents(studentIDText)
 
-    if (getQueryVariable('recorderID')){
+    if (getQueryVariable('recorderID')) {
       filters.recorderID = getQueryVariable('recorderID')
     }
-    if (getQueryVariable('activity')){
+    if (getQueryVariable('activity')) {
       filters.activity = getQueryVariable('activity')
     }
-    if (getQueryVariable('evaluationID')){
+    if (getQueryVariable('evaluationID')) {
       filters.evaluationID = getQueryVariable('evaluationID')
     }
     self.refreshEvaluations(filters)
 
-    if (readOnly && document.getElementById('read_only_message')) { document.getElementById('read_only_message').style.display = 'block' }
+    // for pages that have the read-only warning, turn it on if appropriate
+    if (readOnly && document.getElementById('read_only_message')) {
+      document.getElementById('read_only_message').style.display = 'block'
+    }
   },
 
   setStatus: function (message) {
@@ -268,7 +271,6 @@ window.App = {
 }
 
 window.addEventListener('load', function () {
-
   if (getQueryVariable('localhost')) {
     window.web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:8545'))
     readOnly = false
