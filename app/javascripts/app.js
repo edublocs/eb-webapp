@@ -93,7 +93,7 @@ window.App = {
   },
 
   refreshEvaluations: async function () {
-    var evaluationTable = document.getElementById('evaluations')
+    var evaluationTable = document.getElementById('evaluationTable')
     if (!evaluationTable) {
       return
     }
