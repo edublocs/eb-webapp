@@ -187,33 +187,25 @@ window.App = {
 
     var self = this
 
-    var gb = await self.gradeBook()
-    gb.getStudentCount.call().then(function (value) {
+    try {
+      var gb = await self.gradeBook()
+      var count = await gb.getStudentCount()
       var studentElement = document.getElementById('student')
-      let current
-      let promiseChain = Promise.resolve()
-      for (let i = 1; i <= value.toNumber(); i++) {
-        const makeNextPromise = (current) => () => {
-          return gb.getStudentIDText.call(i)
-            .then((text) => {
-              var option = document.createElement('option')
-              const textUTF8 = web3.utils.toUtf8(text)
-              option.text = textUTF8
-              option.value = i
-              option.selected = (textUTF8 === selectedStudent)
-              studentElement.add(option)
-              students.push(textUTF8)
-            })
-        }
-        promiseChain = promiseChain.then(makeNextPromise(current))
-      };
-      studentElement.innerHTML = value.valueOf()
-      refreshingStudents = false
-    }).catch(function (e) {
-      console.log(e)
-      refreshingStudents = false
+      for (let i = 1; i <= count; i++) {
+        var text = await gb.getStudentIDText(i)
+        var option = document.createElement('option')
+        var textUTF8 = web3.utils.toUtf8(text)
+        option.text = textUTF8
+        option.value = i
+        option.selected = (textUTF8 === selectedStudent)
+        studentElement.add(option)
+        students.push(textUTF8)
+      }
+    } catch (error) {
+      console.log(error)
       self.setStatus('Error getting evaluation count; see log.')
-    })
+    }
+    refreshingStudents = false
   },
 
   // Create a student ID from the text
@@ -241,15 +233,16 @@ window.App = {
 
     this.setStatus('Initiating transaction... (please wait)')
 
-    var gb = await self.gradeBook()
-    gb.makeStudentID(studentIDText, { from: account }).then(async function () {
+    try {
+      var gb = await self.gradeBook()
+      await gb.makeStudentID(studentIDText, { from: account })
       self.setStatus('Created student ID ' + studentIDText)
       await self.refreshStudents(studentIDText)
       document.getElementById('activity').focus()
-    }).catch(function (e) {
-      console.log(e)
+    } catch (error) {
+      console.log(error)
       self.setStatus('Error creating student ID; see log.')
-    })
+    }
   },
 
   // Record the evaluation
@@ -266,9 +259,10 @@ window.App = {
 
     this.setStatus('Initiating transaction... (please wait)')
 
-    var gb = await self.gradeBook()
-    gb.recordEvaluation(
-      studentID, activity, complexity, effort, weight, points, weightedPoints, { from: account }).then(function () {
+    try {
+      var gb = await self.gradeBook()
+      await gb.recordEvaluation(
+        studentID, activity, complexity, effort, weight, points, weightedPoints, { from: account })
       self.setStatus('Transaction complete!')
       // set the values to blank so they won't accidentally submit again
       document.getElementById('activity').value = ''
@@ -277,11 +271,12 @@ window.App = {
       document.getElementById('weight').value = ''
       document.getElementById('points').value = ''
       document.getElementById('weightedPoints').value = ''
-      self.refreshEvaluations()
-    }).catch(function (e) {
-      console.log(e)
+    } catch (error) {
+      console.log(error)
       self.setStatus('Error recording evaluation; see log.')
-    })
+    }
+
+    self.refreshEvaluations()
   }
 }
 
