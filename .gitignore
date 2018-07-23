@@ -3,7 +3,7 @@
 
 # Compiled files
 build/app.js
-build/index.html
+build/*.html
 
 .DS_Store
 node_modules/
