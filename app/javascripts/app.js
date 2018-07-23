@@ -25,7 +25,6 @@ var readOnly = false
 var students = []
 var refreshingEvaluations = false
 var refreshingStudents = false
-var alreadyStarted = false
 
 // handle URL arguments
 function getQueryVariable (variable) {
@@ -47,13 +46,6 @@ window.App = {
   },
 
   start: async function () {
-    // handle multiple start events
-    if (alreadyStarted) {
-      return
-    } else {
-      alreadyStarted = true
-    }
-
     var self = this
 
     // Bootstrap the GradeBook abstraction for Use.
@@ -140,7 +132,7 @@ window.App = {
   },
 
   refreshEvaluations: async function (filters = []) {
-    // handle multiple start events
+    // prevent re-entry
     if (refreshingEvaluations) {
       return
     } else {
@@ -178,7 +170,7 @@ window.App = {
 
   // load the dropdown list of students
   refreshStudents: async function (selectedStudent) {
-    // handle multiple start events; stop if there's no section for the eval
+    // prevent re-entry; stop if there's no section for the eval
     if (refreshingStudents || !document.getElementById('record_evaluation')) {
       return
     } else {
