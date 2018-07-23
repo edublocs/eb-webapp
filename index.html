@@ -1,19 +1,21 @@
 <!DOCTYPE html>
 <html>
 <head>
+
   <title>edublocs Grade Book</title>
   <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
-  <script src="./app.js"></script>
-</head>
-<body>
+
   <h1>edublocs</h1>
+  &nbsp;
   <h2>Grade Book</h2>
 
   <br/>
-  <br/>
 
+
+</head>
+<body>
   <div id="evaluations">
-    <h2><span class="black">Evaluations recorded</h3>
+    <h3>Evaluations recorded</h3>
     <table id="evaluationTable">
       <thead>
         <tr>
@@ -34,6 +36,8 @@
   </div>
 
 
+  <br/>
+
   <div id="read_only_message" style="display:none;">
     <h5>Your browser is not web3 enabled</h5>
     <p>In order to record evaluations your browser needs to support web3.</p>
@@ -41,9 +45,8 @@
   </div>
 
 
-  <div id="create_student" style="overflow:hidden;">
-    <h1>Create a Student ID</h1>
-    <br/>
+  <div id="create_student">
+    <h3>Create a Student ID</h3>
     <label for="StudentIDText">for identifier:</label><input type="text" id="studentIDText" placeholder="e.g., niub20025563"></input>
     <button id="send" onclick="App.makeStudentID()">Create Student ID</button>
     <br/>
@@ -52,8 +55,7 @@
 
 
   <div id="record_evaluation">
-    <h1>Record an Evaluation</h1>
-    <br/>
+    <h3>Record an Evaluation</h3>
     <form onsubmit="App.recordEvaluation(); return false;">
       <label for="student">Student ID:</label><select id="student"></select><br/>
       <label for="activity">Activity:</label><input type="number" min="0" max="4294967295" maxlength="10" id="activity" required /><br/>

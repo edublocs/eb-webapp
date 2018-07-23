@@ -1,16 +1,19 @@
 <!DOCTYPE html>
 <html>
 <head>
+
   <title>edublocs Grade Book</title>
   <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
-  <script src="./app.js"></script>
-</head>
-<body>
+
   <h1>edublocs</h1>
+  &nbsp;
   <h2>Grade Book</h2>
 
   <br/>
-  <br/>
+
+
+</head>
+<body>
 
   <div id="read_only_message" style="display:none;">
     <h5>Your browser is not web3 enabled</h5>
@@ -20,8 +23,7 @@
 
 
   <div id="record_evaluation">
-    <h1>Record an Evaluation</h1>
-    <br/>
+    <h3>Record an Evaluation</h3>
     <form onsubmit="App.recordEvaluation(); return false;">
       <label for="student">Student ID:</label><select id="student"></select><br/>
       <label for="activity">Activity:</label><input type="number" min="0" max="4294967295" maxlength="10" id="activity" required /><br/>
