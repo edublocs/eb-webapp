@@ -101,6 +101,9 @@ window.App = {
     } else if (getQueryVariable('student')) {
       studentIDText = getQueryVariable('student')
       filters.studentID = await window.gradebook.getStudentID(studentIDText)
+      // use the default value for the newstudent page
+      if (!document.getElementById('record_evaluation') && document.getElementById('studentIDText'))
+        document.getElementById('studentIDText').value = studentIDText
     }
 
     // load the student list with the default selected (if any)
@@ -170,8 +173,8 @@ window.App = {
 
   // load the dropdown list of students
   refreshStudents: async function (selectedStudent) {
-    // prevent re-entry; stop if there's no section for the eval
-    if (refreshingStudents || !document.getElementById('record_evaluation')) {
+    // prevent re-entry
+    if (refreshingStudents) {
       return
     } else {
       refreshingStudents = true
@@ -179,23 +182,25 @@ window.App = {
 
     var self = this
 
-    try {
-      var gb = await self.gradeBook()
-      var count = await gb.getStudentCount()
-      var studentElement = document.getElementById('student')
-      for (let i = 1; i <= count; i++) {
-        var text = await gb.getStudentIDText(i)
-        var option = document.createElement('option')
-        var textUTF8 = web3.utils.toUtf8(text)
-        option.text = textUTF8
-        option.value = i
-        option.selected = (textUTF8 === selectedStudent)
-        studentElement.add(option)
-        students.push(textUTF8)
+    // retrieve the list of students
+    // kept in a global for use in validating duplicates
+    students = await edublocs.getStudents()
+
+    // load up the dropbox if it's on the page
+    var studentElement = document.getElementById('student')
+    if (studentElement){
+      try {
+        for (let i = 0; i < students.length; i++) {
+          var option = document.createElement('option')
+          option.text = students[i]
+          option.value = i + 1
+          option.selected = (students[i] === selectedStudent)
+          studentElement.add(option)
+        }
+      } catch (error) {
+        console.log(error)
+        self.setStatus('Error getting evaluation count; see log.')
       }
-    } catch (error) {
-      console.log(error)
-      self.setStatus('Error getting evaluation count; see log.')
     }
     refreshingStudents = false
   },
@@ -218,8 +223,11 @@ window.App = {
     if (students.indexOf(studentIDText) > -1) {
       self.setStatus('Student ID already exists, so you may proceed to record an evaluation.')
       const student = document.getElementById('student')
-      student.selectedIndex = index
-      student.focus()
+      // if Create Evaluation is available, select it
+      if (student) {
+        student.selectedIndex = index
+        student.focus()
+      }
       return
     }
 
@@ -230,7 +238,12 @@ window.App = {
       await gb.makeStudentID(studentIDText, { from: account })
       self.setStatus('Created student ID ' + studentIDText)
       await self.refreshStudents(studentIDText)
-      document.getElementById('activity').focus()
+      // when Create Evaluation is available, move on
+      if (document.getElementById('activity'))
+        document.getElementById('activity').focus()
+      else
+        // otherwise blank out the value
+        document.getElementById('studentIDText').value = ''
     } catch (error) {
       console.log(error)
       self.setStatus('Error creating student ID; see log.')

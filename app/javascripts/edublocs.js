@@ -29,6 +29,20 @@ function findEventByEvaluationID (evaluationID, events) {
   return null
 }
 
+// returns an array of students. Student ID 1-based
+// but the array is of course zero-based.
+async function getStudents() {
+  var result = []
+  const gb = await gradeBook()
+  var count = await gb.getStudentCount()
+  for (let studentID = 1; studentID <= count; studentID++) {
+    var text = web3.utils.toUtf8( await gb.getStudentIDText(studentID))
+    result.push(text)
+  }
+  return result
+}
+
+// returns an array of evaluations according to the filter provided
 async function getEvaluations (filters = []) {
   var result = []
   const gb = await gradeBook()
@@ -110,4 +124,4 @@ async function getEvents (filters = []) {
   }
 }
 
-export default { gradeBook, getEvaluations }
+export default { gradeBook, getEvaluations, getStudents }

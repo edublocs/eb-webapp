@@ -17,6 +17,10 @@ module.exports = {
       template: './app/neweval.html'
     }),
     new HtmlWebpackPlugin({
+      filename: 'newstudent.html',
+      template: './app/newstudent.html'
+    }),
+    new HtmlWebpackPlugin({
       filename: 'view.html',
       template: './app/view.html'
     })
