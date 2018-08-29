@@ -6,6 +6,8 @@ import '../stylesheets/app.css'
 
 // Import libraries we need.
 import { default as contract } from 'truffle-contract'
+import { Parser as Json2csvParser } from 'json2csv'
+import { default as Blob } from 'blob'
 
 // Import our contract artifacts and turn them into usable abstractions.
 import gradeBookArtifacts from '../../build/contracts/GradeBook.json'
@@ -31,12 +33,12 @@ function findEventByEvaluationID (evaluationID, events) {
 
 // returns an array of students. Student ID 1-based
 // but the array is of course zero-based.
-async function getStudents() {
+async function getStudents () {
   var result = []
   const gb = await gradeBook()
   var count = await gb.getStudentCount()
   for (let studentID = 1; studentID <= count; studentID++) {
-    var text = web3.utils.toUtf8( await gb.getStudentIDText(studentID))
+    var text = web3.utils.toUtf8(await gb.getStudentIDText(studentID))
     result.push(text)
   }
   return result
@@ -124,4 +126,56 @@ async function getEvents (filters = []) {
   }
 }
 
-export default { gradeBook, getEvaluations, getStudents }
+// Download the provided CSV as a file by the provided name
+function downloadCSV (file, exportedFilename) {
+  const blob = new Blob([file], { type: 'text/csv;charset=utf-8;' })
+  if (navigator.msSaveBlob) { // IE 10+
+    navigator.msSaveBlob(blob, exportedFilename)
+  } else {
+    const link = document.createElement('a')
+    if (link.download !== undefined) { // feature detection
+      // Browsers that support HTML5 download attribute
+      var url = URL.createObjectURL(blob)
+      link.setAttribute('href', url)
+      link.setAttribute('download', exportedFilename)
+      link.style.visibility = 'hidden'
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+    }
+  }
+}
+
+async function exportAndDownloadCSV (filters, _delimiter = ',') {
+  const headers = {
+    evaluationID: 'evaluationID',
+    recorderID: 'recorderID',
+    recorderAddress: 'recorderAddress',
+    studentID: 'studentID',
+    studentIDText: 'studentIDText',
+    activity: 'activity',
+    complexity: 'complexity',
+    effort: 'effort',
+    weight: 'weight',
+    points: 'points',
+    weightedPoints: 'weightedPoints',
+    blockNumber: 'blockNumber',
+    transactionHash: 'transactionHash',
+    timestamp: 'timestamp'
+  }
+
+  let csv
+  try {
+    const opts = { headers, delimiter: _delimiter }
+    const parser = new Json2csvParser(opts)
+    const evals = await getEvaluations(filters)
+    csv = parser.parse(evals)
+  } catch (err) {
+    console.error(err)
+  }
+
+  // trigger the download
+  downloadCSV(csv, 'evaluations.csv')
+}
+
+export default { exportAndDownloadCSV, gradeBook, getEvaluations, getStudents }

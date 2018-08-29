@@ -9,6 +9,10 @@ module.exports = {
   },
   plugins: [
     new HtmlWebpackPlugin({
+      filename: 'csv.html',
+      template: './app/csv.html'
+    }),
+    new HtmlWebpackPlugin({
       filename: 'index.html',
       template: './app/index.html'
     }),

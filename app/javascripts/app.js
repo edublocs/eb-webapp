@@ -46,9 +46,10 @@ window.App = {
   },
 
   start: async function () {
-    var self = this
+    const self = this
+    const fileName = window.location.pathname.split('/').slice(-1)[0]
 
-    // Bootstrap the GradeBook abstraction for Use.
+    // Bootstrap the GradeBook abstraction for use
     GradeBook.setProvider(web3.currentProvider)
     GradeBook.defaults({ gas: '250000' })
 
@@ -102,8 +103,9 @@ window.App = {
       studentIDText = getQueryVariable('student')
       filters.studentID = await window.gradebook.getStudentID(studentIDText)
       // use the default value for the newstudent page
-      if (!document.getElementById('record_evaluation') && document.getElementById('studentIDText'))
+      if (!document.getElementById('record_evaluation') && document.getElementById('studentIDText')) {
         document.getElementById('studentIDText').value = studentIDText
+      }
     }
 
     // load the student list with the default selected (if any)
@@ -118,6 +120,15 @@ window.App = {
     }
     if (getQueryVariable('evaluationID')) {
       filters.evaluationID = getQueryVariable('evaluationID')
+    }
+
+    if (fileName === 'csv.html') {
+      let delimiter = getQueryVariable('delimiter')
+      // URL encoding will work (such as %09 for tab), but to be friendly...
+      if (delimiter === 'tab') delimiter = '\t'
+      if (delimiter === 'comma') delimiter = ','
+      if (delimiter === 'semicolon') delimiter = ';'
+      await edublocs.exportAndDownloadCSV(filters, delimiter)
     }
 
     // load the evaluations into the table
@@ -188,7 +199,7 @@ window.App = {
 
     // load up the dropbox if it's on the page
     var studentElement = document.getElementById('student')
-    if (studentElement){
+    if (studentElement) {
       try {
         for (let i = 0; i < students.length; i++) {
           var option = document.createElement('option')
@@ -239,11 +250,12 @@ window.App = {
       self.setStatus('Created student ID ' + studentIDText)
       await self.refreshStudents(studentIDText)
       // when Create Evaluation is available, move on
-      if (document.getElementById('activity'))
+      if (document.getElementById('activity')) {
         document.getElementById('activity').focus()
-      else
+      } else {
         // otherwise blank out the value
         document.getElementById('studentIDText').value = ''
+      }
     } catch (error) {
       console.log(error)
       self.setStatus('Error creating student ID; see log.')
