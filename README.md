@@ -19,10 +19,12 @@ The application is deployed in two stages: the smart contract (code residing in 
 ## Smart Contract
 To compile the smart contract and deploy to the Ropsten test network
 * Install a local instance of [geth](https://geth.ethereum.org/install/) 
+* [Create a new account](https://github.com/ethereum/go-ethereum/wiki/Managing-your-accounts) (and make a safe backup of your private key)
 * allow it to sync to the Ropsten network (a "light sync" is recommended)
 `geth --rpc --rpcaddr \"0.0.0.0\" --rpcport \"8545\" --rpcapi \"web3,eth,net,debug\" --rpccorsdomain \"*\" --light --testnet`
+* Unlock your account (adding the option `--unlock 0xYOUR_ACCOUNT` to geth above) and enter your password when prompted.
 * Deploy the contract
-`truffle migrate --network ropsten`
+`npm run migrate-ropsten`
 * Commit the changes to the deployment information in `./build`
 ## Web application
 To compile and deploy the web pages to GitHub Pages:
