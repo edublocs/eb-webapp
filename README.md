@@ -12,14 +12,22 @@ The [Edublocs](http://edublocs.org) web app is an [Ethereum](https://www.ethereu
 * [Truffle framework](hhtps://truffleframework.com) `npm i -g truffle`
 
 # Development
-`npm run dev`
+With the command `npm run dev` the Webpack development server runs at http://localhost:8080/.
 
 # Deployment
-## Web application
-`npm run build-deploy`
+The application is deployed in two stages: the smart contract (code residing in eb-contracts) and the web application.
 ## Smart Contract
+To compile the smart contract and deploy to the Ropsten test network
+* Install a local instance of [geth](https://geth.ethereum.org/install/) 
+* allow it to sync to the Ropsten network (a "light sync" is recommended)
+`geth --rpc --rpcaddr \"0.0.0.0\" --rpcport \"8545\" --rpcapi \"web3,eth,net,debug\" --rpccorsdomain \"*\" --light --testnet`
+* Deploy the contract
 `truffle migrate --network ropsten`
+* Commit the changes to the deployment information in `./build`
+## Web application
+To compile and deploy the web pages to GitHub Pages:
+`npm run build-deploy`
 
 
-Copyright © 2018 Universitat de Barcelona
+Copyright © 2018 [Universitat de Barcelona](http://www.ub.edu)
 Published under the [AGPL 3.0](https://opensource.org/licenses/AGPL-3.0).
