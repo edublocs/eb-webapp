@@ -25,19 +25,28 @@ The `complexity`, `effort`, `weight`, `points`, and `weightedPoints` are decimal
 ### default (index.html)
 Combination page which shows all evaluations (URL filter parameters apply), allows creation of new student IDs (`studentIDText` for pre-population), and creation of new evaluations (pre-population URL parameters apply).
 Standard query filters apply.
+
 Example: https://edublocs.github.io/eb-webapp/neweval.html?recorderID=1&studentIDText=niub2001&activity=14&complexity=100&effort=90&weight=80&points=70&weightedPoints=60
+
 ### csv.html
 Read-only page which downloads a file containing all specified evaluations; standard URL filter parameters apply (see below).
 Special parameter: `delimiter` to specify the character used to separate fields in the resulting file. Can be any URL encoded character (such as `%09` for tab) or the specific strings `comma` (the default), `semicolon`, or `tab`.
+
 Example: https://edublocs.github.io/eb-webapp/csv.html?delimiter=semicolon&activity=14&recorderID=1
+
 ### neweval.html
 Allows creation of new evaluations (pre-population URL parameters apply).
+
 Example: https://edublocs.github.io/eb-webapp/neweval.html?studentIDText=niub2001&activity=14&complexity=100&effort=90&weight=80&points=70&weightedPoints=60
+
 ### newstudent.html
 Allows creation of new student IDs (URL parameter `studentIDText` for pre-population).
+
 Example: https://edublocs.github.io/eb-webapp/newstudent.html?studentIDText=niub2001
+
 ### view.html
 Read-only page which shows all evaluations (URL filter parameters apply).
+
 Example: https://edublocs.github.io/eb-webapp/view.html?recorderID=1&activity=11
 
 ## URL Parameters
@@ -54,7 +63,7 @@ The [Edublocs](http://edublocs.org) web app is an [Ethereum](https://www.ethereu
 * [Truffle framework](hhtps://truffleframework.com) `npm i -g truffle`
 
 # Development
-With the command `npm run dev` the Webpack development server runs at http://localhost:8080/.
+With the command `npm run dev` the Webpack development server runs at [http://localhost:8080](http://localhost:8080/). To use the RPC interface to a local instance of Geth use [http://localhost:8080/?localhost](http://localhost:8080/?localhost).
 
 # Deployment
 The application is deployed in two stages: the smart contract (code residing in eb-contracts) and the web application.
