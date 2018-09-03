@@ -36,7 +36,7 @@ Allows creation of new student IDs (URL parameter `studentIDText` for pre-popula
 Example: https://edublocs.github.io/eb-webapp/newstudent.html?studentIDText=niub2001
 ### view.html
 Read-only page which shows all evaluations (URL filter parameters apply).
-Example: https://edublocs.github.io/eb-webapp/neweval.html?recorderID=1&studentID=2&activity=14
+Example: https://edublocs.github.io/eb-webapp/view.html?recorderID=1&activity=11
 
 ## URL Parameters
 * Filters: `activity`, `evaluationID`, `recorderID`, `studentID`
