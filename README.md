@@ -6,6 +6,17 @@
 # Overview
 The Edublocs Grade Book allows for the permanent recording of grade information in a way that is verifiable, universally accessible, and resistant to modification or deletion. It is a part of the [Edublocs](http://edublocs.org) project which explores the use of blockchain technologies in education.
 
+# Usage
+Anyone can record new entries in the grade book. All that is necessary is to have an Ethereum account with the necessary ETH to pay for the transaction.  We currently recommend [MetaMask](https://metamask.io/) to manage your account and its private keys.
+
+The account which pays the ETH to write to the blockchain is the "recorder" of the evaluation. Each account which writes to the grade book is assigned a different `recorderID`, which can be used to query for the evaluations recorded by that account.
+
+Students are uniquely identifed by the `studentID`, which must be assigned for each unique `studentIDText` before an evaluation can be recorded (using `newstudent.html`).
+
+The coursework is identified by the `activity`, an integer from 0 to 4,294,967,295.
+
+The `complexity`, `effort`, `weight`, `points`, and `weightedPoints` are decimal values between 0 and 10, with up to one decimal point of precision.  On the blockchain these are stored as integers from 0 to 100, and although the smart contract allows values up to 255, these are restricted through the web interface.
+
 # Technical implementation details
 The [Edublocs](http://edublocs.org) web app is an [Ethereum](https://www.ethereum.org/) ÐApp (Distributed Application) for recording [grade information](https://en.wikipedia.org/wiki/Grading_in_education) on an Ethereum blockchain.  The web application is written in Javascript with [Node.JS](https://nodejs.org/), dependencies managed with [npm](https://www.npmjs.com/), compiled into a single-page application using [Webpack](https://webpack.js.org/), deployed on [GitHub Pages](https://pages.github.com/) at [edublocs.github.io/eb-webapp](https://edublocs.github.io/eb-webapp/). It uses the [Truffle framework](https://truffleframework.com/) to deploy the Edublocs Solidity smart contracts (in [eb-contracts](https://github.com/edublocs/eb-contracts)) to the Ropsten Ethereum testnet, where it is deployed at [0x4a4201b2f4231e419661e34d3d92e55c775c6899](https://ropsten.etherscan.io/address/0x4a4201b2f4231e419661e34d3d92e55c775c6899).
 
