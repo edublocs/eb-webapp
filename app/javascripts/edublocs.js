@@ -15,6 +15,7 @@ import gradeBookArtifacts from '../../build/contracts/GradeBook.json'
 // GradeBook is our usable abstraction, which we'll use through the code below.
 var GradeBook = contract(gradeBookArtifacts)
 
+// Helper function for finding the gradebook global variable
 async function gradeBook () {
   if (window.gradebook) {
     return window.gradebook
@@ -24,6 +25,7 @@ async function gradeBook () {
   }
 }
 
+// Iterate over events to find the event for this specific evaluation
 function findEventByEvaluationID (evaluationID, events) {
   for (let i = 0; i < events.length; i++) {
     if (events[i].args.evaluationID.toNumber() === evaluationID) { return events[i] }
@@ -52,23 +54,35 @@ async function getEvaluations (filters = []) {
   // logged events contain block numbers, and therefore times
   var events = await getEvents(filters)
 
-  // the filter that comes first gets processed first
+  // recorderID filtering preferred over studentID filtering
+  // filter inside the contract only if there is a single value
   const count =
-    (filters.recorderID ? await gb.getEvaluationCountByRecorderID.call(filters.recorderID)
-      : (filters.studentID ? await gb.getEvaluationCountByStudentID.call(filters.studentID)
+    ((filters.recorderID && filters.recorderID.length === 1)
+      ? await gb.getEvaluationCountByRecorderID.call(filters.recorderID[0])
+      : ((filters.studentID && filters.studentID.length === 1)
+        ? await gb.getEvaluationCountByStudentID.call(filters.studentID[0])
         : await gb.getEvaluationCount.call()))
+
+  // iterate over the (possibly) filtered evaluations, applying further filtering
   for (let i = 0; i < count; i++) {
-    var evaluation = (filters.recorderID ? await gb.getEvaluationByRecorderID.call(filters.recorderID, i)
-      : (filters.studentID ? await gb.getEvaluationByStudentID.call(filters.studentID, i)
+    var evaluation = ((filters.recorderID && filters.recorderID.length === 1)
+      ? await gb.getEvaluationByRecorderID.call(filters.recorderID[0], i)
+      : ((filters.studentID && filters.studentID.length === 1)
+        ? await gb.getEvaluationByStudentID.call(filters.studentID[0], i)
         : await gb.getEvaluation.call(i)))
     var evaluationID = evaluation[0].toNumber()
     var recorderID = evaluation[1].toNumber()
     var studentID = evaluation[3].toNumber()
     var activity = evaluation[5].toNumber()
 
-    // apply filters
-    if (filters.evaluationID && !filters.evaluationID.includes(evaluationID)) { continue }
+    // apply additional filters
     if (filters.activity && !filters.activity.includes(activity)) { continue }
+    if (filters.evaluationID && !filters.evaluationID.includes(evaluationID)) { continue }
+    // recorderID filtered again manually just in case it is multiple
+    if (filters.recorderID && !filters.recorderID.includes(recorderID)) { continue }
+    // studentID filtered again manually just in case it is multiple
+    // and student ID has to be applied manually if a single recorder ID is used,
+    if (filters.studentID && !filters.studentID.includes(studentID)) { continue }
 
     // find the event that matches this evaluation ID; lets us find out
     // the block number and transaction hash, which are not available
@@ -99,6 +113,7 @@ async function getEvaluations (filters = []) {
   return result
 }
 
+// Handle function that doesn't return a JS promise
 const Promisify = (inner) =>
   new Promise((resolve, reject) =>
     inner((err, res) => {
@@ -110,6 +125,8 @@ const Promisify = (inner) =>
     })
   )
 
+// Get full log of events from the contract, filtered as specified
+// (Note: the filters don't seem to work, so it's pulling everything)
 async function getEvents (filters = []) {
   const gb = await gradeBook()
   filters.fromBlock = 0

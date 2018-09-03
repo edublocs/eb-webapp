@@ -97,8 +97,10 @@ window.App = {
     var filters = []
     var studentIDText = ''
     if (getQueryVariable('studentID')) {
-      filters.studentID = getQueryVariable('studentID')
-      studentIDText = web3.utils.toUtf8(await window.gradebook.getStudentIDText(filters.studentID))
+      filters.studentID = getQueryVariable('studentID').split(',').map(Number)
+      if (filters.studentID.length === 1) {
+        studentIDText = web3.utils.toUtf8(await window.gradebook.getStudentIDText(filters.studentID[0]))
+      }
     } else if (getQueryVariable('student')) {
       studentIDText = getQueryVariable('student')
       filters.studentID = await window.gradebook.getStudentID(studentIDText)
@@ -111,15 +113,15 @@ window.App = {
     // load the student list with the default selected (if any)
     self.refreshStudents(studentIDText)
 
-    // apply other filters
+    // apply other filters: convert string list of numbers to array of numbers
     if (getQueryVariable('recorderID')) {
-      filters.recorderID = getQueryVariable('recorderID')
+      filters.recorderID = getQueryVariable('recorderID').split(',').map(Number)
     }
     if (getQueryVariable('activity')) {
-      filters.activity = getQueryVariable('activity')
+      filters.activity = getQueryVariable('activity').split(',').map(Number)
     }
     if (getQueryVariable('evaluationID')) {
-      filters.evaluationID = getQueryVariable('evaluationID')
+      filters.evaluationID = getQueryVariable('evaluationID').split(',').map(Number)
     }
 
     if (fileName === 'csv.html') {

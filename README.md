@@ -25,7 +25,7 @@ The `complexity`, `effort`, `weight`, `points`, and `weightedPoints` are decimal
 ## Pages
 
 ### default (index.html)
-Combination page which shows all evaluations (URL filter parameters apply), allows creation of new student IDs (`studentIDText` for pre-population), and creation of new evaluations (pre-population URL parameters apply).
+Combination page which shows all evaluations (URL filter parameters apply), allows creation of new student IDs (`student` for pre-population), and creation of new evaluations (pre-population URL parameters apply).
 Standard query filters apply.
 
 Example: https://edublocs.github.io/eb-webapp/neweval.html?recorderID=1&studentIDText=niub2001&activity=14&complexity=100&effort=90&weight=80&points=70&weightedPoints=60
@@ -42,9 +42,9 @@ Allows creation of new evaluations (pre-population URL parameters apply).
 Example: https://edublocs.github.io/eb-webapp/neweval.html?studentIDText=niub2001&activity=14&complexity=100&effort=90&weight=80&points=70&weightedPoints=60
 
 ### newstudent.html
-Allows creation of new student IDs (URL parameter `studentIDText` for pre-population).
+Allows creation of new student IDs (URL parameter `student` for pre-population).
 
-Example: https://edublocs.github.io/eb-webapp/newstudent.html?studentIDText=niub2001
+Example: https://edublocs.github.io/eb-webapp/newstudent.html?student=niub2001
 
 ### view.html
 Read-only page which shows all evaluations (URL filter parameters apply).
@@ -53,7 +53,19 @@ Example: https://edublocs.github.io/eb-webapp/view.html?recorderID=1&activity=11
 
 ## URL Parameters
 * Filters: `activity`, `evaluationID`, `recorderID`, `studentID`
-* Pre-population: `activity`, `complexity`, `effort`, `weight`, `points`, `weightedPoints`
+
+Each of these filters can contain a single value, e.g. `?activity=11` or multiple values `?activity=11,12,13`.
+
+Filters can be combined, e.g. `?activity=11,12&studentID=1,2,3&recorderID=1,2`
+
+The most efficient filters are single values for recorderID or studentID. If neither is specified then all evaluations are scanned for the values required.
+
+These apply to `csv.html`, `index.html`, and `view.html`.
+
+* Pre-population
+For creating a new evaluation, `activity`, `complexity`, `effort`, `weight`, `points`, `weightedPoints`, and `studentID` apply to `index.html` and `neweval.html`.
+
+For creating a new studentID, the parameter `student` pre-populates the "identifier" field on `index.html` and `newstudent.html`.
 
 # Technical implementation details
 The [Edublocs](http://edublocs.org) web app is an [Ethereum](https://www.ethereum.org/) ÐApp (Distributed Application) for recording [grade information](https://en.wikipedia.org/wiki/Grading_in_education) on an Ethereum blockchain.  The web application is written in Javascript with [Node.JS](https://nodejs.org/), dependencies managed with [npm](https://www.npmjs.com/), compiled into a single-page application using [Webpack](https://webpack.js.org/), deployed on [GitHub Pages](https://pages.github.com/) at [edublocs.github.io/eb-webapp](https://edublocs.github.io/eb-webapp/). It uses the [Truffle framework](https://truffleframework.com/) to deploy the Edublocs Solidity smart contracts (in [eb-contracts](https://github.com/edublocs/eb-contracts)) to the Ropsten Ethereum testnet, where it is deployed at [0x4a4201b2f4231e419661e34d3d92e55c775c6899](https://ropsten.etherscan.io/address/0x4a4201b2f4231e419661e34d3d92e55c775c6899).
