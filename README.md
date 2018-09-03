@@ -7,6 +7,8 @@
 The Edublocs Grade Book allows for the permanent recording of grade information in a way that is verifiable, universally accessible, and resistant to modification or deletion. It is a part of the [Edublocs](http://edublocs.org) project which explores the use of blockchain technologies in education.
 
 # Usage
+The grade book is public and can be viewed with any browser at the default page [https://edublocs.github.io/eb-webapp](https://edublocs.github.io/eb-webapp), and additional options (explained below) describe how to filter the data.
+
 Anyone can record new entries in the grade book. All that is necessary is to have an Ethereum account with the necessary ETH to pay for the transaction.  We currently recommend [MetaMask](https://metamask.io/) to manage your account and its private keys.
 
 As the project is still experimental and the cost per transaction on the Ethereum network remains high, the project is deployed on a test network (called "Ropsten"). As a result, you will not need "real" ETH to make transactions, but you will need test ETH to pay for the transaction which can be acquired here: https://faucet.ropsten.be/
