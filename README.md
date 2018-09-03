@@ -9,6 +9,8 @@ The Edublocs Grade Book allows for the permanent recording of grade information 
 # Usage
 Anyone can record new entries in the grade book. All that is necessary is to have an Ethereum account with the necessary ETH to pay for the transaction.  We currently recommend [MetaMask](https://metamask.io/) to manage your account and its private keys.
 
+As the project is still experimental and the cost per transaction on the Ethereum network remains high, the project is deployed on a test network (called "Ropsten"). As a result, you will not need "real" ETH to make transactions, but you will need test ETH to pay for the transaction which can be acquired here: https://faucet.ropsten.be/
+
 ## Terminology
 The account which pays the ETH to write to the blockchain is the "recorder" of the evaluation. Each account which writes to the grade book is assigned a different `recorderID`, which can be used to query for the evaluations recorded by that account.
 
