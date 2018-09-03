@@ -21,12 +21,12 @@ The `complexity`, `effort`, `weight`, `points`, and `weightedPoints` are decimal
 ## Pages
 
 ### default (index.html)
-Combination page which shows all evaluations (standard URL filter parameters apply), allows creation of new student IDs (`studentIDText` for pre-population), and creation of new evaluations (pre-population URL parameters apply).
+Combination page which shows all evaluations (URL filter parameters apply), allows creation of new student IDs (`studentIDText` for pre-population), and creation of new evaluations (pre-population URL parameters apply).
 Standard query filters apply.
 Example: https://edublocs.github.io/eb-webapp/neweval.html?recorderID=1&studentIDText=niub2001&activity=14&complexity=100&effort=90&weight=80&points=70&weightedPoints=60
 ### csv.html
 Read-only page which downloads a file containing all specified evaluations; standard URL filter parameters apply (see below).
-Special parameter: `delimiter` to specify the character used to separate fields in the resulting file. Can be any URL encoded character (such as %09 for tab) or the specific strings `comma` (the default), `semicolon`, or `tab`.
+Special parameter: `delimiter` to specify the character used to separate fields in the resulting file. Can be any URL encoded character (such as `%09` for tab) or the specific strings `comma` (the default), `semicolon`, or `tab`.
 Example: https://edublocs.github.io/eb-webapp/csv.html?delimiter=semicolon&activity=14&recorderID=1
 ### neweval.html
 Allows creation of new evaluations (pre-population URL parameters apply).
@@ -35,7 +35,7 @@ Example: https://edublocs.github.io/eb-webapp/neweval.html?studentIDText=niub200
 Allows creation of new student IDs (URL parameter `studentIDText` for pre-population).
 Example: https://edublocs.github.io/eb-webapp/newstudent.html?studentIDText=niub2001
 ### view.html
-Read-only page which shows all evaluations (standard query filters apply).
+Read-only page which shows all evaluations (URL filter parameters apply).
 Example: https://edublocs.github.io/eb-webapp/neweval.html?recorderID=1&studentID=2&activity=14
 
 ## URL Parameters
