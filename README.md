@@ -3,7 +3,11 @@
 
 # eb-webapp
 
-The [Edublocs](http://edublocs.org) web app is an [Ethereum](https://www.ethereum.org/) ÐApp (Distributed Application) for recording [grade information](https://en.wikipedia.org/wiki/Grading_in_education) on an Ethereum blockchain.  The web application is written in Javascript, compiled into a single-page application through [Webpack](https://webpack.js.org/), deployed on [GitHub Pages](https://pages.github.com/) at [edublocs.github.io/eb-webapp](https://edublocs.github.io/eb-webapp/). It uses the [Truffle framework](https://truffleframework.com/) to deploy the Edublocs Solidity smart contracts (in [eb-contracts](https://github.com/edublocs/eb-contracts)) to the Ropsten Ethereum testnet, where it is deployed at [0x4a4201b2f4231e419661e34d3d92e55c775c6899](https://ropsten.etherscan.io/address/0x4a4201b2f4231e419661e34d3d92e55c775c6899).
+# Overview
+The Edublocs Grade Book allows for the permanent recording of grade information in a way that is verifiable, universally accessible, and resistant to modification or deletion. It is a part of the [Edublocs](http://edublocs.org) project which explores the use of blockchain technologies in education.
+
+# Technical implementation details
+The [Edublocs](http://edublocs.org) web app is an [Ethereum](https://www.ethereum.org/) ÐApp (Distributed Application) for recording [grade information](https://en.wikipedia.org/wiki/Grading_in_education) on an Ethereum blockchain.  The web application is written in Javascript with [Node.JS](https://nodejs.org/), dependencies managed with [npm](https://www.npmjs.com/), compiled into a single-page application using [Webpack](https://webpack.js.org/), deployed on [GitHub Pages](https://pages.github.com/) at [edublocs.github.io/eb-webapp](https://edublocs.github.io/eb-webapp/). It uses the [Truffle framework](https://truffleframework.com/) to deploy the Edublocs Solidity smart contracts (in [eb-contracts](https://github.com/edublocs/eb-contracts)) to the Ropsten Ethereum testnet, where it is deployed at [0x4a4201b2f4231e419661e34d3d92e55c775c6899](https://ropsten.etherscan.io/address/0x4a4201b2f4231e419661e34d3d92e55c775c6899).
 
 # Usage
 
