@@ -4,4 +4,5 @@ node_modules/**
 contracts/**
 migrations/1_initial_migration.js
 migrations/2_deploy_contracts.js
+migrations/3_make_student_ids.js
 test/metacoin.js
