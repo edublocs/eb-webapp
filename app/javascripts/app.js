@@ -248,7 +248,7 @@ window.App = {
 
     try {
       var gb = await self.gradeBook()
-      await gb.makeStudentID(studentIDText, { from: account })
+      await gb.makeStudentID(Web3.utils.utf8ToHex(studentIDText), { from: account })
       self.setStatus('Created student ID ' + studentIDText)
       await self.refreshStudents(studentIDText)
       // when Create Evaluation is available, move on
@@ -317,7 +317,7 @@ window.addEventListener('load', function () {
           web3_clientVersion: 'ZeroClientProvider'
         },
         pollingInterval: 99999999, // not interested in polling for new blocks
-        rpcUrl: 'https://ropsten.infura.io/nxqvLpMcFgty1XUFr67x',
+        rpcUrl: 'https://ropsten.infura.io/v3/e7d4f2bbbc454af2be410252249b787a',
         // account mgmt
         getAccounts: (cb) => cb(null, [])
       }))

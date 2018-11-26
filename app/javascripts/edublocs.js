@@ -40,7 +40,14 @@ async function getStudents () {
   const gb = await gradeBook()
   var count = await gb.getStudentCount()
   for (let studentID = 1; studentID <= count; studentID++) {
-    var text = web3.utils.toUtf8(await gb.getStudentIDText(studentID))
+    var rawText = await gb.getStudentIDText(studentID)
+    var text
+    try {
+      text = web3.utils.toUtf8(rawText)
+    } catch (e) {
+      console.log(e)
+      text = rawText
+    }
     result.push(text)
   }
   return result
