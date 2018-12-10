@@ -26,6 +26,13 @@ module.exports = {
       network_id: '3',
       from: '0x00c8bc664147389328cb56f0b1edc391c591191f',
       gas: 4700000
+    },
+    rinkeby: {
+      host: '127.0.0.1',
+      port: 8551,
+      network_id: '4',
+      from: '0x00c8bc664147389328cb56f0b1edc391c591191f',
+      gas: 4700000
     }
   }
 }

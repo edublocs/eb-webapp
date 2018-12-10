@@ -10,6 +10,7 @@
     "deploy": "gh-pages -d build",
     "dev": "webpack-dev-server --mode development",
     "migrate-ganache": "truffle migrate --network ganache",
+    "migrate-rinkeby": "truffle migrate --network rinkeby",
     "migrate-ropsten": "truffle migrate --network ropsten"
   },
   "bugs": {

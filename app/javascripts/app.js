@@ -49,7 +49,7 @@ window.App = {
 
     // Bootstrap the GradeBook abstraction for use
     GradeBook.setProvider(web3.currentProvider)
-    GradeBook.defaults({ gas: '250000' })
+    GradeBook.defaults({ gas: '350000' })
 
     // workaround https://github.com/trufflesuite/truffle-contract/issues/57
     if (typeof GradeBook.currentProvider.sendAsync !== 'function') {
@@ -162,9 +162,9 @@ window.App = {
     // walk the array, populating the table.
     for (let i = 0; i < evals.length; i++) {
       var row = evaluationTable.insertRow(-1)
-      row.insertCell(0).innerHTML = '<a href="https://ropsten.etherscan.io/tx/' + evals[i].transactionHash + '">' +
+      row.insertCell(0).innerHTML = '<a href="https://rinkeby.etherscan.io/tx/' + evals[i].transactionHash + '">' +
       new Date(evals[i].timestamp * 1000).toLocaleString() + '</a>'
-      row.insertCell(1).innerHTML = '<a href="https://ropsten.etherscan.io/address/' +
+      row.insertCell(1).innerHTML = '<a href="https://rinkeby.etherscan.io/address/' +
       evals[i].recorderAddress + '">' +
       evals[i].recorderAddress.substring(0, 8) + '…</a>'
       row.insertCell(2).innerHTML = evals[i].studentIDText
@@ -230,8 +230,12 @@ window.App = {
 
       // get the student ID if any
       let studentID = await gb.getStudentID(studentIDText)
-      // if it already exists, record it (saves some gas to use the student ID)
-      if (studentID !== 0) {
+      console.log('studentID = ' + studentID);
+      console.log('studentIDText = ' + studentIDText);
+      // zero-based student ID seemed great until this bug...
+      let studentCount = await gb.getStudentCount()
+      if (studentCount > 0 && studentID !== 0) {
+        // if it already exists, record it (saves some gas to use the student ID)
         await gb.recordEvaluation(
           studentID, activity, complexity, effort, weight, points, weightedPoints, { from: account })
       } else {
@@ -259,7 +263,7 @@ window.App = {
 
 window.addEventListener('load', function () {
   if (getQueryVariable('localhost')) {
-    window.web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:8545'))
+    window.web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:8551'))
     readOnly = false
   // Checking if Web3 has been injected by the browser (MetaMask)
   } else if (typeof web3 !== 'undefined' && web3.currentProvider.isMetaMask) {
@@ -275,7 +279,7 @@ window.addEventListener('load', function () {
           web3_clientVersion: 'ZeroClientProvider'
         },
         pollingInterval: 99999999, // not interested in polling for new blocks
-        rpcUrl: 'https://ropsten.infura.io/v3/e7d4f2bbbc454af2be410252249b787a',
+        rpcUrl: 'https://rinkeby.infura.io/v3/e7d4f2bbbc454af2be410252249b787a',
         // account mgmt
         getAccounts: (cb) => cb(null, [])
       }))
