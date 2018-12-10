@@ -230,8 +230,6 @@ window.App = {
 
       // get the student ID if any
       let studentID = (await gb.getStudentID(studentIDText)).toNumber()
-      console.log('studentID = ' + studentID);
-      console.log('studentIDText = ' + studentIDText);
       // zero-based student ID seemed great until this bug...
       let studentCount = await gb.getStudentCount()
       if (studentCount > 0 && studentID !== 0) {
