@@ -229,7 +229,7 @@ window.App = {
       var gb = await self.gradeBook()
 
       // get the student ID if any
-      let studentID = await gb.getStudentID(studentIDText)
+      let studentID = (await gb.getStudentID(studentIDText)).toNumber()
       console.log('studentID = ' + studentID);
       console.log('studentIDText = ' + studentIDText);
       // zero-based student ID seemed great until this bug...
