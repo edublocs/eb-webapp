@@ -22,9 +22,7 @@ var GradeBook = contract(gradeBookArtifacts)
 var accounts
 var account
 var readOnly = false
-var students = []
 var refreshingEvaluations = false
-var refreshingStudents = false
 
 // handle URL arguments
 function getQueryVariable (variable) {
