@@ -82,6 +82,7 @@ window.App = {
 
     // set default values (if passed in)
     if (document.getElementById('record_evaluation')) {
+      document.getElementById('studentIDText').value = getQueryVariable('studentIDText')
       document.getElementById('activity').value = getQueryVariable('activity')
       document.getElementById('complexity').value = getQueryVariable('complexity')
       document.getElementById('effort').value = getQueryVariable('effort')
