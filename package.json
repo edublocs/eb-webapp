@@ -35,7 +35,7 @@
     "copy-webpack-plugin": "^4.5.1",
     "css-loader": "^0.28.11",
     "eb-contracts": "github:edublocs/eb-contracts",
-    "eslint": "^4.19.1",
+    "eslint": "^5.16.0",
     "eslint-config-standard": "^11.0.0",
     "eslint-plugin-babel": "^5.1.0",
     "eslint-plugin-import": "^2.13.0",
