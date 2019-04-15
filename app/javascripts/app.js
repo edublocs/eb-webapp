@@ -110,7 +110,10 @@ window.App = {
     }
 
     // apply other filters: convert string list of numbers to array of numbers
-    if (getQueryVariable('recorderID')) {
+    if (getQueryVariable('recorderAddress')) {
+      filters.recorderID = [(await window.gradebook.getRecorderID(getQueryVariable('recorderAddress'))).toNumber()]
+    }
+    else if (getQueryVariable('recorderID')) {
       filters.recorderID = getQueryVariable('recorderID').split(',').map(Number)
     }
     if (getQueryVariable('activity')) {
