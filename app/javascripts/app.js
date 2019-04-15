@@ -263,8 +263,7 @@ window.App = {
 window.addEventListener('load', async () => {
   if (getQueryVariable('localhost')) {
     var lhport = getQueryVariable('localhost')
-    console.log(lhport)
-    window.web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:' + (lhport ? lhport : '8551')))
+    window.web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:' + (lhport === 'undefined' ? '8551' : lhport)))
     readOnly = false
   // Checking if Web3 has been injected by the browser (MetaMask)
   } else if (typeof web3 !== 'undefined' && web3.currentProvider.isMetaMask) {
