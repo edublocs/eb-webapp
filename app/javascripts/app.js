@@ -260,14 +260,18 @@ window.App = {
   }
 }
 
-window.addEventListener('load', function () {
+window.addEventListener('load', async () => {
   if (getQueryVariable('localhost')) {
-    window.web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:8551'))
+    var lhport = getQueryVariable('localhost')
+    console.log(lhport)
+    window.web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:' + (lhport ? lhport : '8551')))
     readOnly = false
   // Checking if Web3 has been injected by the browser (MetaMask)
   } else if (typeof web3 !== 'undefined' && web3.currentProvider.isMetaMask) {
+    console.log('MetaMask detected')
     // Use MetaMask's provider
     window.web3 = new Web3(web3.currentProvider)
+    await ethereum.enable()
     readOnly = false
   } else {
     // fallback to infura
