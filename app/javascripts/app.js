@@ -263,14 +263,16 @@ window.App = {
 window.addEventListener('load', async () => {
   if (getQueryVariable('localhost')) {
     var lhport = getQueryVariable('localhost')
-    window.web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:' + (lhport === 'undefined' ? '8551' : lhport)))
+    var lhurl = 'http://localhost:' + (lhport === 'undefined' ? '8551' : lhport)
+    window.web3 = new Web3(new Web3.providers.HttpProvider(lhurl))
     readOnly = false
   // Checking if Web3 has been injected by the browser (MetaMask)
   } else if (typeof web3 !== 'undefined' && web3.currentProvider.isMetaMask) {
     console.log('MetaMask detected')
     // Use MetaMask's provider
     window.web3 = new Web3(web3.currentProvider)
-    await ethereum.enable()
+    // https://medium.com/metamask/https-medium-com-metamask-breaking-change-injecting-web3-7722797916a8
+    await window.ethereum.enable()
     readOnly = false
   } else {
     // fallback to infura
