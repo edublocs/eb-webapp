@@ -52,15 +52,17 @@ Read-only page which shows all evaluations (URL filter parameters apply).
 Example: https://edublocs.github.io/eb-webapp/view.html?recorderID=1&activity=11
 
 ## URL Parameters
-* Filters: `activity`, `evaluationID`, `recorderID`, `studentID`
+* Multiple-value filters: `activity`, `evaluationID`, `recorderID`, `studentID`
 
 Each of these filters can contain a single value, e.g. `?activity=11` or multiple values `?activity=11,12,13`.
 
-An additional filter, `recorderAddress`, can be used to specify the Ethereum address of a single recorder, in which case `recorderID` is ignored.
+* Single-value filters: `recorderAddreess`, `student`
+
+Each of these filters can be used instead of `recorderID` and `studentID` respectively (which are then ignored).  The `recorderAddress` is the Ethereum address of a single recorder (e.g. 0x010101010...). The `student` is the student text (e.g. xx28382).
 
 Filters can be combined, e.g. `?activity=11,12&studentID=1,2,3&recorderID=1,2`
 
-The most efficient filters are single values for recorderID or studentID. If neither is specified then all evaluations are scanned for the values required.
+The most efficient filters are single values for `recorderID` or `studentID`. If neither is specified then all evaluations are scanned for the values required, and this is very slow.
 
 All filters apply to `csv.html`, `index.html`, and `view.html`.
 

@@ -95,25 +95,25 @@ window.App = {
     // as default for the student and for filtering the evaluations
     var filters = []
     var studentIDText = ''
-    if (getQueryVariable('studentID')) {
+    if (getQueryVariable('student')) {
+      studentIDText = getQueryVariable('student')
+      filters.studentID = [(await window.gradebook.getStudentID(studentIDText)).toNumber()]
+    } else if (getQueryVariable('studentID')) {
       filters.studentID = getQueryVariable('studentID').split(',').map(Number)
       if (filters.studentID.length === 1) {
         studentIDText = web3.utils.toUtf8(await window.gradebook.getStudentIDText(filters.studentID[0]))
       }
-    } else if (getQueryVariable('student')) {
-      studentIDText = getQueryVariable('student')
-      filters.studentID = await window.gradebook.getStudentID(studentIDText)
-      // use the default value for the newstudent page
-      if (!document.getElementById('record_evaluation') && document.getElementById('studentIDText')) {
-        document.getElementById('studentIDText').value = studentIDText
-      }
+    }
+
+    // if there was only one student specified, use it as the default value
+    if (studentIDText && document.getElementById('studentIDText')) {
+      document.getElementById('studentIDText').value = studentIDText
     }
 
     // apply other filters: convert string list of numbers to array of numbers
     if (getQueryVariable('recorderAddress')) {
       filters.recorderID = [(await window.gradebook.getRecorderID(getQueryVariable('recorderAddress'))).toNumber()]
-    }
-    else if (getQueryVariable('recorderID')) {
+    } else if (getQueryVariable('recorderID')) {
       filters.recorderID = getQueryVariable('recorderID').split(',').map(Number)
     }
     if (getQueryVariable('activity')) {
