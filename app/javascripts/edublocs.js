@@ -9,6 +9,7 @@ import { default as contract } from 'truffle-contract'
 import { Parser as Json2csvParser } from 'json2csv'
 import { default as Blob } from 'blob'
 import localforage from 'localforage'
+import BigNumber from 'bignumber.js'
 
 // Import our contract artifacts and turn them into usable abstractions.
 import gradeBookArtifacts from '../../build/contracts/GradeBook.json'
@@ -22,6 +23,9 @@ var studentIDByText = localforage.createInstance({ name: 'studentIDByText' })
 var studentTextByID = localforage.createInstance({ name: 'studentTextByID' })
 var eventByEvaluationID = localforage.createInstance({ name: 'eventByEvaluationID' })
 var blockByNumber = localforage.createInstance({ name: 'blockByNumber' })
+var evaluationByRecorderIndex = localforage.createInstance({ name: 'evaluationByRecorderIDAndIndex' })
+var evaluationByStudentIDAndIndex = localforage.createInstance({ name: 'evaluationByStudentIDAndIndex' })
+var evaluationByIndex = localforage.createInstance({ name: 'evaluationByIndex' })
 
 // Helper function for finding the gradebook global variable
 async function gradeBook () {
@@ -65,10 +69,10 @@ async function getBlock (number) {
 
 // Get the student ID either from cache or from blockchain
 async function getStudentID (text) {
-  const gb = await gradeBook()
   var studentID = await studentIDByText.getItem(text)
   if (studentID === null) {
-    studentID = (await gb.getStudentID(text))
+    const gb = await gradeBook()
+    studentID = await gb.getStudentID(text)
     await studentTextByID.setItem(studentID.toString(), text)
     await studentIDByText.setItem(text, studentID)
     // console.log('getStudentID cached ' + studentID + ' ' + text)
@@ -80,9 +84,9 @@ async function getStudentID (text) {
 
 // Get the student text either from cache or from blockchain
 async function getStudentIDText (studentID) {
-  const gb = await gradeBook()
   var text = await studentTextByID.getItem(studentID.toString())
   if (text === null) {
+    const gb = await gradeBook()
     var rawText = await gb.getStudentIDText(studentID)
     try {
       text = web3.utils.toUtf8(rawText)
@@ -97,6 +101,19 @@ async function getStudentIDText (studentID) {
     // console.log('cache hit! getStudentIDText ' + text)
   }
   return text
+}
+
+async function getEvaluation (index) {
+  var evaluation = await evaluationByIndex.getItem(index.toString())
+  if (evaluation === null) {
+    const gb = await gradeBook()
+    evaluation = await gb.getEvaluation.call(index)
+    await evaluationByIndex.setItem(index.toString(), evaluation.map(String))
+    // console.log('getEvaluation cached ' + index)
+  } else {
+    // console.log('cache hit! getEvaluation ' + index)
+  }
+  return evaluation
 }
 
 // returns an array of students. Student ID 1-based
@@ -134,11 +151,11 @@ async function getEvaluations (filters = []) {
       ? await gb.getEvaluationByRecorderID.call(filters.recorderID[0], i)
       : ((filters.studentID && filters.studentID.length === 1)
         ? await gb.getEvaluationByStudentID.call(filters.studentID[0], i)
-        : await gb.getEvaluation.call(i)))
-    var evaluationID = evaluation[0].toNumber()
-    var recorderID = evaluation[1].toNumber()
-    var studentID = evaluation[3].toNumber()
-    var activity = evaluation[5].toNumber()
+        : await getEvaluation(i)))
+    var evaluationID = Number(evaluation[0])
+    var recorderID = Number(evaluation[1])
+    var studentID = Number(evaluation[3])
+    var activity = Number(evaluation[5])
 
     // apply additional filters
     if (filters.activity && !filters.activity.includes(activity)) { continue }
@@ -164,11 +181,11 @@ async function getEvaluations (filters = []) {
       studentID: studentID,
       studentIDText: web3.utils.toUtf8(evaluation[4]),
       activity: activity,
-      complexity: evaluation[6].toNumber(),
-      effort: evaluation[7].toNumber(),
-      weight: evaluation[8].toNumber(),
-      points: evaluation[9].toNumber(),
-      weightedPoints: evaluation[10].toNumber(),
+      complexity: Number(evaluation[6]),
+      effort: Number(evaluation[7]),
+      weight: Number(evaluation[8]),
+      points: Number(evaluation[9]),
+      weightedPoints: Number(evaluation[10]),
       blockNumber: evnt.blockNumber,
       transactionHash: evnt.transactionHash,
       timestamp: block.timestamp
