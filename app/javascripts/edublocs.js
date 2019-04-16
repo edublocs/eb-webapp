@@ -20,6 +20,8 @@ var GradeBook = contract(gradeBookArtifacts)
 // Since they're invariant, no invalidation necessary.
 var studentIDByText = localforage.createInstance({ name: 'studentIDByText' })
 var studentTextByID = localforage.createInstance({ name: 'studentTextByID' })
+var eventByEvaluationID = localforage.createInstance({ name: 'eventByEvaluationID' })
+var blockByNumber = localforage.createInstance({ name: 'blockByNumber' })
 
 // Helper function for finding the gradebook global variable
 async function gradeBook () {
@@ -32,11 +34,33 @@ async function gradeBook () {
 }
 
 // Iterate over events to find the event for this specific evaluation
-function findEventByEvaluationID (evaluationID, events) {
-  for (let i = 0; i < events.length; i++) {
-    if (events[i].args.evaluationID.toNumber() === evaluationID) { return events[i] }
+async function findEventByEvaluationID (evaluationID, events) {
+  var foundEvent = await eventByEvaluationID.getItem(evaluationID.toString())
+  if (foundEvent === null) {
+    for (let i = 0; i < events.length; i++) {
+      if (events[i].args.evaluationID.toNumber() === evaluationID) {
+        foundEvent = events[i]
+        await eventByEvaluationID.setItem(evaluationID.toString(), foundEvent)
+        // console.log('findEventByEvaluationID cached ' + evaluationID)
+        break
+      }
+    }
+  } else {
+    // console.log('cache hit! findEventByEvaluationID ' + evaluationID)
   }
-  return null
+  return foundEvent
+}
+
+async function getBlock (number) {
+  var block = await blockByNumber.getItem(number.toString())
+  if (block === null) {
+    block = await web3.eth.getBlock(number)
+    await blockByNumber.setItem(number.toString(), block)
+    // console.log('getBlock cached ' + number)
+  } else {
+    // console.log('cache hit! getBlock ' + number)
+  }
+  return block
 }
 
 // Get the student ID either from cache or from blockchain
@@ -47,9 +71,9 @@ async function getStudentID (text) {
     studentID = (await gb.getStudentID(text))
     await studentTextByID.setItem(studentID.toString(), text)
     await studentIDByText.setItem(text, studentID)
-    console.log('getStudentID cached ' + studentID + ' ' + text)
+    // console.log('getStudentID cached ' + studentID + ' ' + text)
   } else {
-    console.log('cache hit! getStudentID ' + text)
+    // console.log('cache hit! getStudentID ' + text)
   }
   return studentID
 }
@@ -64,13 +88,13 @@ async function getStudentIDText (studentID) {
       text = web3.utils.toUtf8(rawText)
       await studentTextByID.setItem(studentID.toString(), text)
       await studentIDByText.setItem(text, studentID)
-      console.log('getStudentIDText cached ' + studentID + ' ' + text)
+      // console.log('getStudentIDText cached ' + studentID + ' ' + text)
     } catch (e) {
       console.log(e)
       text = rawText
     }
   } else {
-    console.log('cache hit! getStudentIDText ' + text)
+    // console.log('cache hit! getStudentIDText ' + text)
   }
   return text
 }
@@ -128,10 +152,10 @@ async function getEvaluations (filters = []) {
     // find the event that matches this evaluation ID; lets us find out
     // the block number and transaction hash, which are not available
     // from within Solidity because we don't store them ($$$).
-    var evnt = findEventByEvaluationID(evaluationID, events)
+    var evnt = await findEventByEvaluationID(evaluationID, events)
 
     // get the block for the event so we can figure out the timestamp
-    var block = await web3.eth.getBlock(evnt.blockNumber)
+    var block = await getBlock(evnt.blockNumber)
 
     result.push({
       evaluationID: evaluationID,
