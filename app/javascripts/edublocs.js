@@ -23,7 +23,7 @@ var studentTextByID = localforage.createInstance({ name: 'studentTextByID' })
 var eventByEvaluationID = localforage.createInstance({ name: 'eventByEvaluationID' })
 var blockByNumber = localforage.createInstance({ name: 'blockByNumber' })
 var evaluationByRecorderIndex = localforage.createInstance({ name: 'evaluationByRecorderIDAndIndex' })
-var evaluationByStudentIDAndIndex = localforage.createInstance({ name: 'evaluationByStudentIDAndIndex' })
+var evaluationByStudentIndex = localforage.createInstance({ name: 'evaluationByStudentIDAndIndex' })
 var evaluationByIndex = localforage.createInstance({ name: 'evaluationByIndex' })
 
 // Helper function for finding the gradebook global variable
@@ -44,12 +44,12 @@ async function findEventByEvaluationID (evaluationID, events) {
       if (events[i].args.evaluationID.toNumber() === evaluationID) {
         foundEvent = events[i]
         await eventByEvaluationID.setItem(evaluationID.toString(), foundEvent)
-        // console.log('findEventByEvaluationID cached ' + evaluationID)
+        // console.log(`findEventByEvaluationID cached ${evaluationID}`)
         break
       }
     }
   } else {
-    // console.log('cache hit! findEventByEvaluationID ' + evaluationID)
+    // console.log(`cache hit! findEventByEvaluationID ${evaluationID}`)
   }
   return foundEvent
 }
@@ -59,9 +59,9 @@ async function getBlock (number) {
   if (block === null) {
     block = await web3.eth.getBlock(number)
     await blockByNumber.setItem(number.toString(), block)
-    // console.log('getBlock cached ' + number)
+    // console.log(`getBlock cached ${number}`)
   } else {
-    // console.log('cache hit! getBlock ' + number)
+    // console.log(`cache hit! getBlock ${number}`)
   }
   return block
 }
@@ -74,9 +74,9 @@ async function getStudentID (text) {
     studentID = await gb.getStudentID(text)
     await studentTextByID.setItem(studentID.toString(), text)
     await studentIDByText.setItem(text, studentID)
-    // console.log('getStudentID cached ' + studentID + ' ' + text)
+    // console.log(`getStudentID cached ${studentID} ${text}`)
   } else {
-    // console.log('cache hit! getStudentID ' + text)
+    // console.log(`cache hit! getStudentID ${studentID} ${text}`)
   }
   return studentID
 }
@@ -91,13 +91,13 @@ async function getStudentIDText (studentID) {
       text = web3.utils.toUtf8(rawText)
       await studentTextByID.setItem(studentID.toString(), text)
       await studentIDByText.setItem(text, studentID)
-      // console.log('getStudentIDText cached ' + studentID + ' ' + text)
+      // console.log(`getStudentIDText cached ${studentID} ${text}`)
     } catch (e) {
       console.log(e)
       text = rawText
     }
   } else {
-    // console.log('cache hit! getStudentIDText ' + text)
+    // console.log(`cache hit! getStudentIDText ${studentID} ${text}`)
   }
   return text
 }
@@ -123,9 +123,23 @@ async function getEvaluationByRecorderID (recorderID, index) {
     const gb = await gradeBook()
     evaluation = await gb.getEvaluationByRecorderID.call(recorderID, index)
     await evaluationByRecorderIndex.setItem(key, evaluation.map(String))
-    console.log(`getEvaluationByRecorderID cached ${key}`)
+    // console.log(`getEvaluationByRecorderID cached ${key}`)
   } else {
-    console.log(`cache hit! getEvaluation ${key}`)
+    // console.log(`cache hit! getEvaluationByRecorderID ${key}`)
+  }
+  return evaluation
+}
+
+async function getEvaluationByStudentID (studentID, index) {
+  var key = `${studentID}-${index}`
+  var evaluation = await evaluationByStudentIndex.getItem(key)
+  if (evaluation === null) {
+    const gb = await gradeBook()
+    evaluation = await gb.getEvaluationByStudentID.call(studentID, index)
+    await evaluationByStudentIndex.setItem(key, evaluation.map(String))
+    // console.log(`getEvaluationByStudentID cached ${key}`)
+  } else {
+    // console.log(`cache hit! getEvaluationByStudentID ${key}`)
   }
   return evaluation
 }
@@ -164,7 +178,7 @@ async function getEvaluations (filters = []) {
     var evaluation = ((filters.recorderID && filters.recorderID.length === 1)
       ? await getEvaluationByRecorderID(filters.recorderID[0], i)
       : ((filters.studentID && filters.studentID.length === 1)
-        ? await gb.getEvaluationByStudentID.call(filters.studentID[0], i)
+        ? await getEvaluationByStudentID(filters.studentID[0], i)
         : await getEvaluation(i)))
     var evaluationID = Number(evaluation[0])
     var recorderID = Number(evaluation[1])
