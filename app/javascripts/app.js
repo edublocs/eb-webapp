@@ -275,7 +275,10 @@ window.addEventListener('load', async () => {
     // Use MetaMask's provider
     window.web3 = new Web3(web3.currentProvider)
     // https://medium.com/metamask/https-medium-com-metamask-breaking-change-injecting-web3-7722797916a8
-    await window.ethereum.enable()
+    // older versions of metamask don't have this.
+    if (window.ethereum) {
+      await window.ethereum.enable()
+    }
     readOnly = false
   } else {
     // fallback to infura
