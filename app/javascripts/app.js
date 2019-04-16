@@ -97,11 +97,11 @@ window.App = {
     var studentIDText = ''
     if (getQueryVariable('student')) {
       studentIDText = getQueryVariable('student')
-      filters.studentID = [(await window.gradebook.getStudentID(studentIDText)).toNumber()]
+      filters.studentID = [(await edublocs.getStudentID(studentIDText))]
     } else if (getQueryVariable('studentID')) {
       filters.studentID = getQueryVariable('studentID').split(',').map(Number)
       if (filters.studentID.length === 1) {
-        studentIDText = web3.utils.toUtf8(await window.gradebook.getStudentIDText(filters.studentID[0]))
+        studentIDText = await edublocs.getStudentIDText(filters.studentID[0])
       }
     }
 
@@ -233,7 +233,7 @@ window.App = {
       var gb = await self.gradeBook()
 
       // get the student ID if any
-      let studentID = (await gb.getStudentID(studentIDText)).toNumber()
+      let studentID = await edublocs.getStudentID(studentIDText)
       // zero-based student ID seemed great until this bug...
       let studentCount = await gb.getStudentCount()
       if (studentCount > 0 && studentID !== 0) {

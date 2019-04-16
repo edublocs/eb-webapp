@@ -8,12 +8,18 @@ import '../stylesheets/app.css'
 import { default as contract } from 'truffle-contract'
 import { Parser as Json2csvParser } from 'json2csv'
 import { default as Blob } from 'blob'
+import localforage from 'localforage'
 
 // Import our contract artifacts and turn them into usable abstractions.
 import gradeBookArtifacts from '../../build/contracts/GradeBook.json'
 
 // GradeBook is our usable abstraction, which we'll use through the code below.
 var GradeBook = contract(gradeBookArtifacts)
+
+// Use localstorage to cache various data that we've retrieved before.
+// Since they're invariant, no invalidation necessary.
+var studentIDByText = localforage.createInstance({ name: 'studentIDByText' })
+var studentTextByID = localforage.createInstance({ name: 'studentTextByID' })
 
 // Helper function for finding the gradebook global variable
 async function gradeBook () {
@@ -33,6 +39,42 @@ function findEventByEvaluationID (evaluationID, events) {
   return null
 }
 
+// Get the student ID either from cache or from blockchain
+async function getStudentID (text) {
+  const gb = await gradeBook()
+  var studentID = await studentIDByText.getItem(text)
+  if (studentID === null) {
+    studentID = (await gb.getStudentID(text))
+    await studentTextByID.setItem(studentID.toString(), text)
+    await studentIDByText.setItem(text, studentID)
+    console.log('getStudentID cached ' + studentID + ' ' + text)
+  } else {
+    console.log('cache hit! getStudentID ' + text)
+  }
+  return studentID
+}
+
+// Get the student text either from cache or from blockchain
+async function getStudentIDText (studentID) {
+  const gb = await gradeBook()
+  var text = await studentTextByID.getItem(studentID.toString())
+  if (text === null) {
+    var rawText = await gb.getStudentIDText(studentID)
+    try {
+      text = web3.utils.toUtf8(rawText)
+      await studentTextByID.setItem(studentID.toString(), text)
+      await studentIDByText.setItem(text, studentID)
+      console.log('getStudentIDText cached ' + studentID + ' ' + text)
+    } catch (e) {
+      console.log(e)
+      text = rawText
+    }
+  } else {
+    console.log('cache hit! getStudentIDText ' + text)
+  }
+  return text
+}
+
 // returns an array of students. Student ID 1-based
 // but the array is of course zero-based.
 async function getStudents () {
@@ -40,15 +82,7 @@ async function getStudents () {
   const gb = await gradeBook()
   var count = await gb.getStudentCount()
   for (let studentID = 1; studentID <= count; studentID++) {
-    var rawText = await gb.getStudentIDText(studentID)
-    var text
-    try {
-      text = web3.utils.toUtf8(rawText)
-    } catch (e) {
-      console.log(e)
-      text = rawText
-    }
-    result.push(text)
+    result.push(await getStudentIDText(studentID))
   }
   return result
 }
@@ -202,4 +236,4 @@ async function exportAndDownloadCSV (filters, _delimiter = ',') {
   downloadCSV(csv, 'evaluations.csv')
 }
 
-export default { exportAndDownloadCSV, gradeBook, getEvaluations, getStudents }
+export default { exportAndDownloadCSV, gradeBook, getEvaluations, getStudents, getStudentID, getStudentIDText }

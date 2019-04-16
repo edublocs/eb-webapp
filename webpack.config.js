@@ -35,6 +35,7 @@ module.exports = {
         test: /\.css$/,
         use: [ 'style-loader', 'css-loader' ]
       }
-    ]
+    ],
+    noParse: [new RegExp('node_modules/localforage/dist/localforage.js')]
   }
 }
