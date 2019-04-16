@@ -104,14 +104,29 @@ async function getStudentIDText (studentID) {
 }
 
 async function getEvaluation (index) {
-  var evaluation = await evaluationByIndex.getItem(index.toString())
+  var key = index.toString()
+  var evaluation = await evaluationByIndex.getItem(key)
   if (evaluation === null) {
     const gb = await gradeBook()
     evaluation = await gb.getEvaluation.call(index)
-    await evaluationByIndex.setItem(index.toString(), evaluation.map(String))
-    // console.log('getEvaluation cached ' + index)
+    await evaluationByIndex.setItem(key, evaluation.map(String))
+    // console.log(`getEvaluation cached ${key}`)
   } else {
-    // console.log('cache hit! getEvaluation ' + index)
+    // console.log(`cache hit! getEvaluation ${key}`)
+  }
+  return evaluation
+}
+
+async function getEvaluationByRecorderID (recorderID, index) {
+  var key = `${recorderID}-${index}`
+  var evaluation = await evaluationByRecorderIndex.getItem(key)
+  if (evaluation === null) {
+    const gb = await gradeBook()
+    evaluation = await gb.getEvaluationByRecorderID.call(recorderID, index)
+    await evaluationByRecorderIndex.setItem(key, evaluation.map(String))
+    console.log(`getEvaluationByRecorderID cached ${key}`)
+  } else {
+    console.log(`cache hit! getEvaluation ${key}`)
   }
   return evaluation
 }
@@ -148,7 +163,7 @@ async function getEvaluations (filters = []) {
   // iterate over the (possibly) filtered evaluations, applying further filtering
   for (let i = 0; i < count; i++) {
     var evaluation = ((filters.recorderID && filters.recorderID.length === 1)
-      ? await gb.getEvaluationByRecorderID.call(filters.recorderID[0], i)
+      ? await getEvaluationByRecorderID(filters.recorderID[0], i)
       : ((filters.studentID && filters.studentID.length === 1)
         ? await gb.getEvaluationByStudentID.call(filters.studentID[0], i)
         : await getEvaluation(i)))
