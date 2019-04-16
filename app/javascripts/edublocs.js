@@ -9,7 +9,6 @@ import { default as contract } from 'truffle-contract'
 import { Parser as Json2csvParser } from 'json2csv'
 import { default as Blob } from 'blob'
 import localforage from 'localforage'
-import BigNumber from 'bignumber.js'
 
 // Import our contract artifacts and turn them into usable abstractions.
 import gradeBookArtifacts from '../../build/contracts/GradeBook.json'
